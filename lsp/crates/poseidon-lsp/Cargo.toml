@@ -1,0 +1,20 @@
+[package]
+name = "poseidon-lsp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Language server for the Poseidon resource languages (SQF/SQS scripting and the ParamFile config format), for any LSP-capable editor."
+
+[[bin]]
+name = "poseidon-lsp"
+path = "src/main.rs"
+
+[dependencies]
+poseidon-catalog = { path = "../poseidon-catalog" }
+poseidon-syntax = { path = "../poseidon-syntax" }
+tower-lsp.workspace = true
+tokio.workspace = true
+dashmap.workspace = true
+once_cell.workspace = true
+serde.workspace = true
+serde_json.workspace = true

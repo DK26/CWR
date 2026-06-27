@@ -1,0 +1,338 @@
+{
+  "_comment": "Authored documentation corpus for the classic Operation Flashpoint / Cold War Assault command set. The engine ships no in-binary doc strings, so the prose here is authored, NOT mechanically extracted. It is kept honest by tests/docs_grounded.rs (poseidon-catalog) and tests/doc_examples.rs (poseidon-syntax): every `name` must be a real catalog command, and every `examples` entry must lex clean and type-check clean against the engine-faithful checker. Signatures/arg-types are rendered from the catalog, never duplicated here. Keyed case-insensitively by `name`.",
+
+  "player": {
+    "group": "unit-query",
+    "description": "The unit the local human player controls. The single most-used entry point in mission scripts.",
+    "examples": ["player setDamage 0", "_p = player"]
+  },
+  "setDamage": {
+    "group": "object-state",
+    "description": "Sets the total damage of an object: 0 is pristine, 1 is destroyed (dead for a person). Spreads across hit points. Same as setDammage (the original British spelling shipped in OFP).",
+    "examples": ["player setDamage 0", "_tank setDamage 0.5"]
+  },
+  "setDammage": {
+    "group": "object-state",
+    "description": "Original-spelling alias of setDamage: 0 pristine, 1 destroyed. Both spellings are registered commands in this engine.",
+    "examples": ["player setDammage 1"]
+  },
+  "getDammage": {
+    "group": "object-state",
+    "description": "Current total damage of an object, 0 (pristine) to 1 (destroyed). Read-side counterpart of setDamage.",
+    "examples": ["_d = getDammage player"]
+  },
+  "alive": {
+    "group": "object-state",
+    "description": "True while the object exists and is not destroyed (damage < 1). The standard liveness test for people and vehicles.",
+    "examples": ["if (alive player) then {hint \"still here\"}", "_ok = alive _unit"]
+  },
+  "fuel": {
+    "group": "object-state",
+    "description": "Fuel level of a vehicle as a fraction, 0 (empty) to 1 (full).",
+    "examples": ["_f = fuel _car"]
+  },
+  "setFuel": {
+    "group": "object-state",
+    "description": "Sets a vehicle's fuel level as a fraction 0..1.",
+    "examples": ["_car setFuel 1", "_car setFuel 0.25"]
+  },
+  "setCaptive": {
+    "group": "object-state",
+    "description": "Marks a unit as captive (true) or not (false). A captive unit is treated as friendly/neutral by all sides and will not be fired on.",
+    "examples": ["_prisoner setCaptive true"]
+  },
+  "allowDamage": {
+    "group": "object-state",
+    "description": "Enables (true) or disables (false) damage to an object. While false the object is invulnerable.",
+    "examples": ["_vip allowDamage false"]
+  },
+  "removeAllWeapons": {
+    "group": "object-state",
+    "description": "Strips every weapon and magazine from a unit.",
+    "examples": ["removeAllWeapons player"]
+  },
+  "addWeapon": {
+    "group": "inventory",
+    "description": "Adds a weapon (by class name) to a unit's inventory.",
+    "examples": ["player addWeapon \"M16\""]
+  },
+  "addMagazine": {
+    "group": "inventory",
+    "description": "Adds one magazine (by class name) to a unit's inventory.",
+    "examples": ["player addMagazine \"30Rnd_556x45_Stanag\""]
+  },
+
+  "getPos": {
+    "group": "position-query",
+    "description": "World position of an object as [x, y, z] in metres. z is height above ground level.",
+    "examples": ["_p = getPos player"]
+  },
+  "position": {
+    "group": "position-query",
+    "description": "World position of an object as [x, y, z]. Equivalent to getPos for objects.",
+    "examples": ["_p = position player"]
+  },
+  "setPos": {
+    "group": "movement",
+    "description": "Teleports an object to a world position given as [x, y, z]. A z of 0 puts it on the ground.",
+    "examples": ["player setPos [2500, 3100, 0]", "_heli setPos [getPos player select 0, getPos player select 1, 50]"]
+  },
+  "getDir": {
+    "group": "position-query",
+    "description": "Compass heading of an object in degrees, 0 (north) to 360 clockwise.",
+    "examples": ["_h = getDir player"]
+  },
+  "setDir": {
+    "group": "movement",
+    "description": "Instantly turns an object to a compass heading in degrees (0 = north, clockwise).",
+    "examples": ["player setDir 90"]
+  },
+  "setVelocity": {
+    "group": "movement",
+    "description": "Sets an object's velocity vector [x, y, z] in metres per second. Useful for launching or nudging physics objects.",
+    "examples": ["_ball setVelocity [0, 20, 5]"]
+  },
+  "velocity": {
+    "group": "position-query",
+    "description": "An object's current velocity as [x, y, z] in metres per second.",
+    "examples": ["_v = velocity _car"]
+  },
+  "distance": {
+    "group": "position-query",
+    "description": "Distance in metres between two objects. NOTE: in this classic engine distance takes an OBJECT on both sides — there is no object-to-position form (that was added later in Arma).",
+    "examples": ["_d = player distance _enemy"]
+  },
+
+  "name": {
+    "group": "unit-query",
+    "description": "The display name of a person (the editor-assigned or generated soldier name).",
+    "examples": ["_n = name player"]
+  },
+  "typeOf": {
+    "group": "unit-query",
+    "description": "The config class name of an object, e.g. \"SoldierWB\". Empty string for objects without a type.",
+    "examples": ["_t = typeOf player"]
+  },
+  "side": {
+    "group": "side-group",
+    "description": "The side of a unit or group: west, east, resistance (guer) or civilian.",
+    "examples": ["if (side player == west) then {hint \"BLUFOR\"}"]
+  },
+  "group": {
+    "group": "side-group",
+    "description": "The group a unit belongs to. Pass it to units to enumerate members.",
+    "examples": ["_g = group player"]
+  },
+  "units": {
+    "group": "side-group",
+    "description": "Array of all units in a group (or in the group of a given unit). Iterate with forEach.",
+    "examples": ["_all = units group player", "{_x setCaptive true} forEach units group player"]
+  },
+  "leader": {
+    "group": "side-group",
+    "description": "The current leader of a group (or of the group a unit is in).",
+    "examples": ["_ldr = leader group player"]
+  },
+  "vehicle": {
+    "group": "unit-query",
+    "description": "The vehicle a unit is in, or the unit itself when on foot. Use to distinguish mounted from dismounted.",
+    "examples": ["if (vehicle player == player) then {hint \"on foot\"}"]
+  },
+  "driver": {
+    "group": "unit-query",
+    "description": "The unit in the driver's seat of a vehicle.",
+    "examples": ["_d = driver _car"]
+  },
+  "gunner": {
+    "group": "unit-query",
+    "description": "The unit in the gunner's seat of a vehicle.",
+    "examples": ["_g = gunner _tank"]
+  },
+  "commander": {
+    "group": "unit-query",
+    "description": "The unit in the commander's seat of a vehicle.",
+    "examples": ["_c = commander _tank"]
+  },
+  "knowsAbout": {
+    "group": "ai",
+    "description": "How well a unit (or its group) knows about a target, from 0 (no knowledge) to 4 (fully identified).",
+    "examples": ["_k = player knowsAbout _enemy"]
+  },
+  "reveal": {
+    "group": "ai",
+    "description": "Makes a unit/group instantly aware of a target object, as if it had spotted it.",
+    "examples": ["player reveal _enemy"]
+  },
+  "setBehaviour": {
+    "group": "ai",
+    "description": "Sets a unit's or group's combat behaviour: \"CARELESS\", \"SAFE\", \"AWARE\", \"COMBAT\" or \"STEALTH\".",
+    "examples": ["group player setBehaviour \"COMBAT\""]
+  },
+  "setUnitPos": {
+    "group": "ai",
+    "description": "Forces a unit's stance: \"UP\" (standing), \"DOWN\" (prone) or \"AUTO\".",
+    "examples": ["player setUnitPos \"DOWN\""]
+  },
+  "doMove": {
+    "group": "ai",
+    "description": "Orders a unit or group to move to a position [x, y, z] without a radio callout (silent move).",
+    "examples": ["_soldier doMove [2500, 3100, 0]"]
+  },
+  "doFollow": {
+    "group": "ai",
+    "description": "Orders a unit to return to formation and follow a target unit (silent).",
+    "examples": ["_soldier doFollow leader group _soldier"]
+  },
+
+  "createVehicle": {
+    "group": "creation",
+    "description": "Spawns a vehicle/object of the given class at a position. Classic forms: \"type\" createVehicle [x,y,z], or createVehicle [type, pos, markers, radius, placement].",
+    "examples": ["\"Jeep\" createVehicle [2500, 3100, 0]"]
+  },
+  "createUnit": {
+    "group": "creation",
+    "description": "Creates a person of the given class into an existing group: \"type\" createUnit [pos, group, init, skill, rank].",
+    "examples": ["\"SoldierWB\" createUnit [[2500,3100,0], _grp]"]
+  },
+  "deleteVehicle": {
+    "group": "creation",
+    "description": "Removes an object from the world immediately.",
+    "examples": ["deleteVehicle _wreck"]
+  },
+  "nearestObject": {
+    "group": "queries",
+    "description": "The nearest object to a position, optionally filtered. Argument is an array such as [position] or [position, type].",
+    "examples": ["_o = nearestObject [2500, 3100, 0]"]
+  },
+
+  "hint": {
+    "group": "text-ui",
+    "description": "Shows a hint box with the given text in the top-left of the screen. Combine with format for dynamic text.",
+    "examples": ["hint \"Objective complete\"", "hint format [\"%1 fuel left\", fuel _car]"]
+  },
+  "titleText": {
+    "group": "text-ui",
+    "description": "Displays centred title text. Argument is [text, type, speed] where type is \"PLAIN\", \"PLAIN DOWN\", \"BLACK\", \"BLACK FADED\", etc.",
+    "examples": ["titleText [\"Mission start\", \"PLAIN DOWN\"]"]
+  },
+  "cutText": {
+    "group": "text-ui",
+    "description": "Like titleText but shown on the secondary (cut) layer, so it does not interrupt a title. Argument is [text, type, speed].",
+    "examples": ["cutText [\"Reinforcements inbound\", \"PLAIN\"]"]
+  },
+  "format": {
+    "group": "text-ui",
+    "description": "Builds a string from a template and values: format [\"text %1 and %2\", a, b]. %1, %2 ... are replaced by the following array elements stringified.",
+    "examples": ["_s = format [\"%1 damage\", getDammage player]"]
+  },
+  "playMusic": {
+    "group": "sound",
+    "description": "Plays a music track defined in CfgMusic by its class name.",
+    "examples": ["playMusic \"track01\""]
+  },
+  "playSound": {
+    "group": "sound",
+    "description": "Plays a sound defined in CfgSounds by its class name (2D, non-positional).",
+    "examples": ["playSound \"alarm\""]
+  },
+
+  "if": {
+    "group": "control-flow",
+    "description": "Begins a conditional. Returns an If value to be consumed by then: if (condition) then {…} else {…}. Like all control words in this engine, if is an ordinary command, not a reserved keyword.",
+    "examples": ["if (alive player) then {hint \"alive\"}"]
+  },
+  "then": {
+    "group": "control-flow",
+    "description": "Runs the code that follows when the preceding if is true. Pair with else as then {…} else {…}, or use a single block.",
+    "examples": ["if (alive player) then {player setDamage 0} else {hint \"dead\"}"]
+  },
+  "else": {
+    "group": "control-flow",
+    "description": "Joins the true and false branches into the pair consumed by then: then { … } else { … }.",
+    "examples": ["if (true) then {hint \"a\"} else {hint \"b\"}"]
+  },
+  "while": {
+    "group": "control-flow",
+    "description": "Begins a conditional loop. Returns a While value consumed by do: while {condition} do {body}. The condition is a code block, re-evaluated each iteration.",
+    "examples": ["while {alive player} do {player setDamage 0}"]
+  },
+  "forEach": {
+    "group": "control-flow",
+    "description": "Runs a code block once per element of an array. Inside the block _x is the current element. Written as {body} forEach array.",
+    "examples": ["{_x setCaptive true} forEach units group player"]
+  },
+  "exitWith": {
+    "group": "control-flow",
+    "description": "When used after if, runs its block and exits the current script: if (condition) exitWith {…}.",
+    "examples": ["if (not alive player) exitWith {hint \"player dead\"}"]
+  },
+  "call": {
+    "group": "control-flow",
+    "description": "Executes a code block (compiled string) immediately and returns its result. Optionally takes arguments on the left.",
+    "examples": ["_r = call {2 + 2}"]
+  },
+  "private": {
+    "group": "control-flow",
+    "description": "Declares one or more variable names local to the current scope: private \"_x\" or private [\"_x\", \"_y\"].",
+    "examples": ["private \"_count\"", "private [\"_i\", \"_n\"]"]
+  },
+
+  "select": {
+    "group": "arrays",
+    "description": "Picks an element from an array by zero-based index, or by boolean (false→first, true→second): array select index.",
+    "examples": ["_first = _list select 0", "_x = getPos player select 0"]
+  },
+  "count": {
+    "group": "arrays",
+    "description": "Number of elements in an array (unary), or the number matching a condition string (binary): \"alive _x\" count units _grp.",
+    "examples": ["_n = count units group player"]
+  },
+  "in": {
+    "group": "arrays",
+    "description": "True if the left value is an element of the right array, or (object form) if a unit is in a vehicle.",
+    "examples": ["if (player in units group player) then {hint \"member\"}"]
+  },
+
+  "abs": {
+    "group": "math",
+    "description": "Absolute value of a number.",
+    "examples": ["_a = abs (0 - 5)"]
+  },
+  "random": {
+    "group": "math",
+    "description": "A pseudo-random number from 0 (inclusive) up to the given value (exclusive).",
+    "examples": ["_r = random 100"]
+  },
+  "sin": {
+    "group": "math",
+    "description": "Sine of an angle given in degrees.",
+    "examples": ["_y = sin 30"]
+  },
+  "cos": {
+    "group": "math",
+    "description": "Cosine of an angle given in degrees.",
+    "examples": ["_x = cos 60"]
+  },
+
+  "setMarkerPos": {
+    "group": "markers",
+    "description": "Moves a map marker (by name) to a position [x, y, z].",
+    "examples": ["\"objMarker\" setMarkerPos getPos player"]
+  },
+  "setMarkerType": {
+    "group": "markers",
+    "description": "Changes a map marker's icon type (by name) to a marker class string.",
+    "examples": ["\"objMarker\" setMarkerType \"destroy\""]
+  },
+  "getMarkerPos": {
+    "group": "markers",
+    "description": "Position [x, y, z] of a named map marker.",
+    "examples": ["_p = getMarkerPos \"start\""]
+  },
+
+  "publicVariable": {
+    "group": "multiplayer",
+    "description": "Broadcasts a global variable's current value to every machine in a multiplayer session. Argument is the variable name as a string.",
+    "examples": ["score = 10", "publicVariable \"score\""]
+  }
+}

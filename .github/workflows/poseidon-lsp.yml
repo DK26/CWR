@@ -1,0 +1,58 @@
+# CI for the Poseidon language tooling (lsp/ workspace): build, test, and
+# demonstrate the `poseidon-check` linter on the shipped classic-OFP mission
+# fixtures — HEMTT-style "lint the resources as part of the build".
+#
+# Scoped to the Rust tooling so it stays fast and self-contained; it does not
+# build the C++ engine. The evaluator-parity test (which needs PoseidonEvaluator)
+# skips automatically when that binary is absent, so the suite stays green here.
+name: poseidon-lsp
+
+on:
+  push:
+    paths:
+      - 'lsp/**'
+      - 'tests/fixtures/**'
+      - '.github/workflows/poseidon-lsp.yml'
+  pull_request:
+    paths:
+      - 'lsp/**'
+      - 'tests/fixtures/**'
+      - '.github/workflows/poseidon-lsp.yml'
+  workflow_dispatch:
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lsp
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            lsp/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('lsp/**/Cargo.toml') }}
+
+      - name: Build
+        run: cargo build --release --workspace
+
+      - name: Test
+        run: cargo test --workspace
+
+      - name: Lint shipped mission fixtures (must be clean)
+        run: cargo run --release -p poseidon-cli -- ../tests/fixtures/mission_linter/valid-mission
+
+      - name: Export the doc corpus as validate_ref JSON
+        run: |
+          cargo run --release -p poseidon-cli -- export-ref "$RUNNER_TEMP/refs"
+          echo "Exported $(ls "$RUNNER_TEMP/refs" | wc -l) reference files."
+          # When a PoseidonEvaluator build is available, validate them against the
+          # real engine: PoseidonEvaluator --validate-ref "$RUNNER_TEMP/refs"

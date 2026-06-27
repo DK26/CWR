@@ -1,0 +1,6560 @@
+[
+ {
+  "name": "!",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "!=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "!=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "!=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "!=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameGroup",
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "!=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameSide",
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "%",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucin"
+ },
+ {
+  "name": "&&",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "logicAnd"
+ },
+ {
+  "name": "*",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucin"
+ },
+ {
+  "name": "+",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucet"
+ },
+ {
+  "name": "+",
+  "kind": "binary",
+  "ret": "GameString",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucet"
+ },
+ {
+  "name": "+",
+  "kind": "binary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucet"
+ },
+ {
+  "name": "+",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "+",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "-",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucet"
+ },
+ {
+  "name": "-",
+  "kind": "binary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucet"
+ },
+ {
+  "name": "-",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "/",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucin"
+ },
+ {
+  "name": "<",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "<=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "==",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "==",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "==",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "==",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameGroup",
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "==",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameSide",
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": ">",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": ">=",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "comparison"
+ },
+ {
+  "name": "^",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "mocnina"
+ },
+ {
+  "name": "abs",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "accTime",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "acos",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "action",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addAction",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "addAction",
+  "kind": "binary",
+  "ret": "GameNothing|GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addClass",
+  "kind": "binary",
+  "ret": "GameFile",
+  "args": [
+   "GameFile",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addEventHandler",
+  "kind": "binary",
+  "ret": "GameNothing|GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addMagazine",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addMagazineCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addMagazinePool",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "addMagazinePrecise",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addRating",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addScore",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addValue",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameFile",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addWaypoint",
+  "kind": "binary",
+  "ret": "GameArray",
+  "args": [
+   "GameGroup",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addWeapon",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addWeaponCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "addWeaponPool",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "alive",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "alive",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "allowDamage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "allowDamage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "allowDammage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "allowDammage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "allowFleeing",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "allowGetIn",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "ammo",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "ammoArray",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "and",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "logicAnd"
+ },
+ {
+  "name": "animate",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "animate",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "animationPhase",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "animationPhase",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "asin",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "assignAsCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "assignAsCommander",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "assignAsDriver",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "assignAsGunner",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "atan",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "atan2",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucin"
+ },
+ {
+  "name": "atg",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "behavior",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "behaviour",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "benchmark",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "boolEq",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "boolNe",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "buildingPos",
+  "kind": "binary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "buttonAction",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "buttonSetAction",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cadetMode",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "call",
+  "kind": "binary",
+  "ret": "GameVoid",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "call",
+  "kind": "unary",
+  "ret": "GameAny",
+  "args": [
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "camCommand",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camCommit",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camCommitted",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "camCreate",
+  "kind": "binary",
+  "ret": "GameObject",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camDestroy",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cameraEffect",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "cameraOn",
+  "kind": "nular",
+  "ret": "GameObject",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "camSetBank",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetDive",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetFov",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetFovRange",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetRelPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetTarget",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "camSetTarget",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "canFire",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "canMove",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "canStand",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "captive",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cheatsEnabled",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "civilian",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "clearMagazineCargo",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "clearMagazinePool",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "clearWeaponCargo",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "clearWeaponPool",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "closeDialog",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "combatMode",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObjectOrGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commander",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandFire",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandFollow",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandstop",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandTarget",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandWatch",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandWatch",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "commandxxx",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "comment",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "cos",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "count",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "count",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "countEnemy",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "countFriendly",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "countSide",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameSide",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "countType",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "countType",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "countUnknown",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "createCenter",
+  "kind": "unary",
+  "ret": "GameSide",
+  "args": [
+   "GameSide"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "createCenter",
+  "kind": "unary",
+  "ret": "GameSide",
+  "args": [
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createDialog",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createGroup",
+  "kind": "unary",
+  "ret": "GameGroup",
+  "args": [
+   "GameSide"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "createGroup",
+  "kind": "unary",
+  "ret": "GameGroup",
+  "args": [
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createGuardedPoint",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createMarker",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createShell",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createTrigger",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "createUnit",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "createUnit",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "createVehicle",
+  "kind": "binary",
+  "ret": "GameObject",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "createVehicle",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "crew",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlEnable",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlEnabled",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlSetText",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlShow",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlText",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ctrlVisible",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cutObj",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cutRsc",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "cutText",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "damage",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "damage",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "dayTime",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "DBG_screenshot",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "DBG_switchLandscape",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "debugLog",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "deg",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "deleteCenter",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteGroup",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteIdentity",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteMarker",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteStatus",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteVehicle",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "deleteVehicle",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "deleteWaypoint",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "diag_drawmode",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "SceneDraw.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "diag_enable",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameBool"
+  ],
+  "src": "SceneDraw.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "diag_log",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "diag_toggle",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "SceneDraw.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "dialog",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "direction",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "disableAI",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "disableUserInput",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "distance",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "distance",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "do",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameWhile",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "do",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameForTo",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "doFire",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doFollow",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "dostop",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doTarget",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doWatch",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doWatch",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "doxxx",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "driver",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "drop",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "east",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "else",
+  "kind": "binary",
+  "ret": "GameArray",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "functionFirst"
+ },
+ {
+  "name": "enableEndDialog",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "enableRadio",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "enableSimulation",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "endGame",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "engineOn",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "estimatedTimeLeft",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "exec",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "exit",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "exitWith",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameIf",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "exitWith",
+  "kind": "unary",
+  "ret": "GameVoid",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "exp",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "fadeMusic",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "fadeSound",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "false",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "fillWeaponsFromPool",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "find",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameArray",
+   "GameVoid"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "fire",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "fire",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "flag",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "flagOwner",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "fleeing",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "flyInHeight",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "for",
+  "kind": "unary",
+  "ret": "GameFor",
+  "args": [
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "forceEnd",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "forceMap",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "forEach",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "format",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "formation",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObjectOrGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "formLeader",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "from",
+  "kind": "binary",
+  "ret": "GameForFrom",
+  "args": [
+   "GameFor",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "fuel",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "fuel",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "GetAmmoParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetAmmoParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetAmmoSubParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetAmmoSubParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "getDamage",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getDammage",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "getDammage",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getDir",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "getDir",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "GetHitpointsNames",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMarkerColor",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMarkerDir",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMarkerPos",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMarkerSize",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMarkerType",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMass",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getMove",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getPos",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "getPos",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getPosASL",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getSelectionDamage",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetSelectionDammage",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "getTurretDirAndElev",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getValue",
+  "kind": "binary",
+  "ret": "GameVoid",
+  "args": [
+   "GameFile",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "getVariable",
+  "kind": "binary",
+  "ret": "GameVoid",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "GetVehicleParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetVehicleParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetVehicleSubParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetVehicleSubParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetWeaponParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetWeaponParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetWeaponSubParam",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "GetWeaponSubParamArray",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "getWorld",
+  "kind": "nular",
+  "ret": "GameString",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "getWPPos",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "globalChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "globalChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "globalRadio",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "goto",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "group",
+  "kind": "unary",
+  "ret": "GameGroup",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "group",
+  "kind": "unary",
+  "ret": "GameGroup",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "groupChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "groupChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "groupRadio",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "grpNull",
+  "kind": "nular",
+  "ret": "GameGroup",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "gunner",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "handsHit",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "hasWeapon",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "hint",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "hintC",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "hintCadet",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "if",
+  "kind": "unary",
+  "ret": "GameIf",
+  "args": [
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "in",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameVoid",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "in",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "inflame",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "inflamed",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "isEngineOn",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "isJIP",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "isNull",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "isNull",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "isNull",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "isServer",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "join",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameGroup"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "join",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameObjectOrGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "knowsAbout",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObjectOrGroup",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "land",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "laserTarget",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbAdd",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbClear",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbColor",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbCurSel",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbData",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbDelete",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbPicture",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSetColor",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSetCurSel",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSetData",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSetPicture",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSetValue",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbSize",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbText",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lbValue",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "leader",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "leader",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "leader",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "leaveVehicle",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "leaveVehicle",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameGroup",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "lightIsOn",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "list",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "listConfigNames",
+  "kind": "nular",
+  "ret": "GameArray",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "ln",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "loadConfig",
+  "kind": "unary",
+  "ret": "GameFile",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "loadFile",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "loadIdentity",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "loadMission",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "loadStatus",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "local",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "localize",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lock",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "locked",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "lockWp",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "log",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "logInfo",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "magazines",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "magazinesArray",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapAnimAdd",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapAnimClear",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapAnimCommit",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapAnimDone",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapHeight",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapLeftTopPos",
+  "kind": "nular",
+  "ret": "GameArray",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mapWidth",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "markerColor",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "markerPos",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "markerSize",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "markerType",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "missionName",
+  "kind": "nular",
+  "ret": "GameString",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "missionStart",
+  "kind": "nular",
+  "ret": "GameArray",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "mod",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "soucin"
+ },
+ {
+  "name": "move",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "moveInCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "moveInCommander",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "moveInDriver",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "moveInGunner",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "musicVolume",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "muzzleReloadTime",
+  "kind": "binary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "name",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "name",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "nearestBuilding",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "nearestObject",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "NearestObjectDistance",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "netId",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "NetworkId",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "newConfig",
+  "kind": "nular",
+  "ret": "GameFile",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "nil",
+  "kind": "nular",
+  "ret": "GameVoid",
+  "args": [],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "not",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "object",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "objectFromNetId",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "objNull",
+  "kind": "nular",
+  "ret": "GameObject",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "objStatus",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "onBriefingGear",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onBriefingGroup",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onBriefingNotes",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onBriefingPlan",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onMapSingleClick",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onPlayerConnected",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "onPlayerDisconnected",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "openClass",
+  "kind": "binary",
+  "ret": "GameFile",
+  "args": [
+   "GameFile",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "or",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "logicOr"
+ },
+ {
+  "name": "orderGetIn",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "parseSimpleArray",
+  "kind": "unary",
+  "ret": "GameAny",
+  "args": [
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "pi",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "pickWeaponPool",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "player",
+  "kind": "nular",
+  "ret": "GameObject",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "playerClearInjured",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "playersNumber",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "playMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "playMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "playMusic",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "playMusic",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "playSound",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "position",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "preprocessFile",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "primaryWeapon",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "private",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString|GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "publicExec",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "publicVariable",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "publicVariableArray",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "publicVariableString",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "putWeaponPool",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "queryMagazinePool",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "queryWeaponPool",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "rad",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "random",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "rating",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "rating",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "remoteExec",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameAny",
+   "GameString|GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "remoteExecCall",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameAny",
+   "GameString|GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "remoteExecRemove",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "removeAction",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "removeAction",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "removeAllEventHandlers",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "removeAllEventHandlers",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "removeAllWeapons",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "removeEventHandler",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "removeMagazine",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "removeMagazines",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "removeWeapon",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "requiredVersion",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "resistance",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "resize",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "reveal",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "saveConfig",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameFile",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "saveGame",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "saveIdentity",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "saveMission",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "saveStatus",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "saveVar",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "say",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "say",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "score",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "score",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "scudState",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "secondaryWeapon",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "select",
+  "kind": "binary",
+  "ret": "GameVoid",
+  "args": [
+   "GameArray",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "select",
+  "kind": "binary",
+  "ret": "GameVoid",
+  "args": [
+   "GameArray",
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "selectWeapon",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "serverPause",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "serverResume",
+  "kind": "nular",
+  "ret": "GameNothing",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "set",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "setAccTime",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "setAmmoCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setBehavior",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setBehaviour",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setCameraEffect",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject|GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setCaptive",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setCombatMode",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setDamage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setDamage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setDammage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setDammage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setDate",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "setDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setEffectCondition",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject|GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFace",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFaceanimation",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFlagOwner",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFlagSide",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameSide"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFlagTexture",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFog",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFormation",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFormDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFriend",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameSide",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFuel",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setFuelCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setGroupid",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setIdentity",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setIdentity",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerBrush",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerColor",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerShape",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerSize",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerText",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMarkerType",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMimic",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setMusicEffect",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject|GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setObjectTexture",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setOvercast",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setPosASL",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setRadioMsg",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setRain",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setRepairCargo",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setSelectionDamage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "SetSelectionDammage",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setSkill",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setSoundEffect",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject|GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setSpeedMode",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrGroup",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTerrainGrid",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "setTitleEffect",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject|GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerActivation",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerArea",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerStatements",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerText",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerTimeout",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setTriggerType",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setUnitPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setVariable",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "setVectorDir",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setVectorDirAndUp",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setVectorUp",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setVelocity",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setViewDistance",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "setWaypointBehavior",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointBehaviour",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointCombatMode",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointDescription",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointFormation",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointHousePosition",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointPosition",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointScript",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointSpeed",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointStatements",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointTimeout",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWaypointType",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "setWPPos",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "showCinemaBorder",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showCompass",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showDebug",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showGps",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showMap",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownCompass",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownGps",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownMap",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownPad",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownRadio",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownWarrant",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "shownWatch",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showPad",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showRadio",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showWarrant",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showWatch",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "showWaypoint",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "side",
+  "kind": "unary",
+  "ret": "GameSide",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "side",
+  "kind": "unary",
+  "ret": "GameSide",
+  "args": [
+   "GameObjectOrGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sideChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "sideChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "sideEnemy",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sideFriendly",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sideLogic",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "sideRadio",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObjectOrArray",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "sin",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "sizeofstr",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "skill",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "skipTime",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderPosition",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderRange",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderSetPosition",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderSetRange",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderSetSpeed",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sliderSpeed",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "someAmmo",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "soundLength",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "soundVolume",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "speed",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "speed",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "speedMode",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObjectOrGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "sqrt",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "step",
+  "kind": "binary",
+  "ret": "GameForTo",
+  "args": [
+   "GameForTo",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "stop",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameBool"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "stopped",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "str",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "substr",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "switchCamera",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "switchLight",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "switchMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "switchMove",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "synchronizeWaypoint",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "synchronizeWaypoint",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "tan",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "textLog",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "tg",
+  "kind": "unary",
+  "ret": "GameScalar",
+  "args": [
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "then",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameIf",
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "then",
+  "kind": "binary",
+  "ret": "GameAny",
+  "args": [
+   "GameIf",
+   "GameArray"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "time",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "titleCut",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "titleObj",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "titleRsc",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "titleText",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "to",
+  "kind": "binary",
+  "ret": "GameForTo",
+  "args": [
+   "GameForFrom",
+   "GameScalar"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "function"
+ },
+ {
+  "name": "toArray",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "toString",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameArray"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "triggerAttachObject",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "triggerAttachVehicle",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "true",
+  "kind": "nular",
+  "ret": "GameBool",
+  "args": [],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "typeOf",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "typeOf",
+  "kind": "unary",
+  "ret": "GameString",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "unassignVehicle",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "UnitById",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "unitReady",
+  "kind": "unary",
+  "ret": "GameBool",
+  "args": [
+   "GameObjectOrArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "units",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "units",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameGroup"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "units",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "usedVersion",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_addEvent",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_addFooter",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_addHeader",
+  "kind": "unary",
+  "ret": "GameNothing",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_injuries",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_killed",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "VBS_kills",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "vectorDir",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "vectorUp",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "vehicle",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "vehicle",
+  "kind": "unary",
+  "ret": "GameObject",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "vehicleChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameVoid",
+   "GameString"
+  ],
+  "src": "EvalState.cpp",
+  "origin": "host",
+  "prio": "function"
+ },
+ {
+  "name": "vehicleChat",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "vehicleRadio",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameObject",
+   "GameString"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "velocity",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "waypointAttachObject",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameScalar"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "waypointAttachVehicle",
+  "kind": "binary",
+  "ret": "GameNothing",
+  "args": [
+   "GameArray",
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine",
+  "prio": "function"
+ },
+ {
+  "name": "waypointPosition",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameArray"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "weapons",
+  "kind": "unary",
+  "ret": "GameArray",
+  "args": [
+   "GameObject"
+  ],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "west",
+  "kind": "nular",
+  "ret": "GameSide",
+  "args": [],
+  "src": "EvalState.cpp",
+  "origin": "host"
+ },
+ {
+  "name": "while",
+  "kind": "unary",
+  "ret": "GameWhile",
+  "args": [
+   "GameString"
+  ],
+  "src": "express.cpp",
+  "origin": "core"
+ },
+ {
+  "name": "worldSize",
+  "kind": "nular",
+  "ret": "GameScalar",
+  "args": [],
+  "src": "GameStateExt.cpp",
+  "origin": "engine"
+ },
+ {
+  "name": "||",
+  "kind": "binary",
+  "ret": "GameBool",
+  "args": [
+   "GameBool",
+   "GameBool"
+  ],
+  "src": "express.cpp",
+  "origin": "core",
+  "prio": "logicOr"
+ }
+]

@@ -1,0 +1,59 @@
+{
+ "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+ "name": "ParamFile (Poseidon config)",
+ "scopeName": "source.paramfile",
+ "patterns": [{ "include": "#main" }],
+ "repository": {
+  "main": {
+   "patterns": [
+    { "include": "#comment-line" },
+    { "include": "#comment-block" },
+    { "include": "#preprocessor" },
+    { "include": "#class" },
+    { "include": "#enum" },
+    { "include": "#string" },
+    { "include": "#number" },
+    { "include": "#property" },
+    { "include": "#operator" }
+   ]
+  },
+  "comment-line": { "match": "//.*$", "name": "comment.line.double-slash.paramfile" },
+  "comment-block": { "begin": "/\\*", "end": "\\*/", "name": "comment.block.paramfile" },
+  "preprocessor": {
+   "match": "^\\s*#\\s*(include|define|undef|ifdef|ifndef|else|endif)\\b.*$",
+   "name": "meta.preprocessor.paramfile",
+   "captures": { "1": { "name": "keyword.control.directive.paramfile" } }
+  },
+  "class": {
+   "match": "(?i)\\b(class)\\b\\s*([A-Za-z_]\\w*)?\\s*(?:(:)\\s*([A-Za-z_]\\w*))?",
+   "captures": {
+    "1": { "name": "storage.type.class.paramfile" },
+    "2": { "name": "entity.name.type.class.paramfile" },
+    "3": { "name": "punctuation.separator.inheritance.paramfile" },
+    "4": { "name": "entity.other.inherited-class.paramfile" }
+   }
+  },
+  "enum": { "match": "(?i)\\b(enum)\\b", "name": "storage.type.enum.paramfile" },
+  "string": {
+   "name": "string.quoted.double.paramfile",
+   "begin": "\"",
+   "end": "\"",
+   "patterns": [{ "match": "\"\"", "name": "constant.character.escape.paramfile" }]
+  },
+  "number": {
+   "patterns": [
+    { "match": "(?i)0x[0-9a-f]+", "name": "constant.numeric.hex.paramfile" },
+    { "match": "(?i)\\bdb[+-]?\\d+(\\.\\d+)?\\b", "name": "constant.numeric.decibel.paramfile" },
+    { "match": "(?i)(\\b\\d+(\\.\\d+)?(e[+-]?\\d+)?\\b|\\.\\d+)", "name": "constant.numeric.paramfile" }
+   ]
+  },
+  "property": {
+   "match": "\\b([A-Za-z_]\\w*)\\s*(\\[\\])?\\s*(?==)",
+   "captures": {
+    "1": { "name": "variable.other.property.paramfile" },
+    "2": { "name": "punctuation.definition.array.paramfile" }
+   }
+  },
+  "operator": { "match": "=|\\+=|:", "name": "keyword.operator.paramfile" }
+ }
+}

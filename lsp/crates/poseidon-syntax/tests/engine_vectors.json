@@ -1,0 +1,447 @@
+[
+ {
+  "expr": "2 + 3 * 4",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:34"
+ },
+ {
+  "expr": "10 - 2 * 3",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:42"
+ },
+ {
+  "expr": "5 * 2 + 3",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:50"
+ },
+ {
+  "expr": "2 * 3 ^ 2",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:63"
+ },
+ {
+  "expr": "10 / 2 ^ 2",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:71"
+ },
+ {
+  "expr": "(2 + 3) * 4",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:84"
+ },
+ {
+  "expr": "(10 - 2) * 3",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:91"
+ },
+ {
+  "expr": "2 * (3 + 4)",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:98"
+ },
+ {
+  "expr": "-2 + 3",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:110"
+ },
+ {
+  "expr": "-(2 + 3)",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:117"
+ },
+ {
+  "expr": "-2 * 3",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:124"
+ },
+ {
+  "expr": "((2 + 3) * 4) + 5",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:141"
+ },
+ {
+  "expr": "2 * (3 + (4 * 5))",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:148"
+ },
+ {
+  "expr": "(1 + (2 * (3 + 4)))",
+  "expect": "valid",
+  "src": "test_evaluator_complex.cpp:161"
+ },
+ {
+  "expr": "5 + * 3",
+  "expect": "error",
+  "src": "test_evaluator_complex.cpp:462"
+ },
+ {
+  "expr": "5 +",
+  "expect": "error",
+  "src": "test_evaluator_complex.cpp:475"
+ },
+ {
+  "expr": "invalid syntax here",
+  "expect": "error",
+  "src": "test_evaluator_complex.cpp:490"
+ },
+ {
+  "expr": "((1 + 2) * (3 + 4))",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:146"
+ },
+ {
+  "expr": "   5   +   3   ",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:250"
+ },
+ {
+  "expr": "2+2",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:264"
+ },
+ {
+  "expr": "999999999999",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:503"
+ },
+ {
+  "expr": "0.000000001",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:506"
+ },
+ {
+  "expr": "-999999999999",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:509"
+ },
+ {
+  "expr": "2 + 3",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:535"
+ },
+ {
+  "expr": "(10 * 2) + (5 - 3)",
+  "expect": "valid",
+  "src": "test_evaluator_edge.cpp:543"
+ },
+ {
+  "expr": "nonexistentfunc 5",
+  "expect": "error",
+  "src": "test_evaluator_functions.cpp:435"
+ },
+ {
+  "expr": "(20 * 20) + (10 * 10)",
+  "expect": "valid",
+  "src": "test_evaluator_integration.cpp:353"
+ },
+ {
+  "expr": "(5 * 5) + (5 * 5)",
+  "expect": "valid",
+  "src": "test_evaluator_integration.cpp:386"
+ },
+ {
+  "expr": "1 + 1",
+  "expect": "valid",
+  "src": "test_evaluator_reentrancy.cpp:58"
+ },
+ {
+  "expr": "2 + 2",
+  "expect": "valid",
+  "src": "test_evaluator_reentrancy.cpp:66"
+ },
+ {
+  "expr": "3 + 3 + 3",
+  "expect": "valid",
+  "src": "test_evaluator_reentrancy.cpp:67"
+ },
+ {
+  "expr": "42",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:35"
+ },
+ {
+  "expr": "0",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:43"
+ },
+ {
+  "expr": "-123",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:50"
+ },
+ {
+  "expr": "999999",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:57"
+ },
+ {
+  "expr": "3.14",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:69"
+ },
+ {
+  "expr": "0.0",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:77"
+ },
+ {
+  "expr": "-2.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:84"
+ },
+ {
+  "expr": ".5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:91"
+ },
+ {
+  "expr": "1.23456789",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:98"
+ },
+ {
+  "expr": "10 + 5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:171"
+ },
+ {
+  "expr": "3.5 + 2.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:178"
+ },
+ {
+  "expr": "10 + 2.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:185"
+ },
+ {
+  "expr": "-5 + 3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:192"
+ },
+ {
+  "expr": "10 + 0",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:199"
+ },
+ {
+  "expr": "10 - 5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:211"
+ },
+ {
+  "expr": "7.5 - 2.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:218"
+ },
+ {
+  "expr": "3 - 10",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:225"
+ },
+ {
+  "expr": "5 - (-3)",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:232"
+ },
+ {
+  "expr": "6 * 7",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:244"
+ },
+ {
+  "expr": "2.5 * 4",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:251"
+ },
+ {
+  "expr": "100 * 0",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:258"
+ },
+ {
+  "expr": "-5 * 3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:265"
+ },
+ {
+  "expr": "-5 * -3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:272"
+ },
+ {
+  "expr": "10 / 2",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:284"
+ },
+ {
+  "expr": "7.5 / 2.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:291"
+ },
+ {
+  "expr": "10 / 3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:298"
+ },
+ {
+  "expr": "10 / -2",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:305"
+ },
+ {
+  "expr": "10 % 3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:326"
+ },
+ {
+  "expr": "10 % 2",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:333"
+ },
+ {
+  "expr": "9 % 3",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:340"
+ },
+ {
+  "expr": "100 % 7",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:347"
+ },
+ {
+  "expr": "2 ^ 8",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:359"
+ },
+ {
+  "expr": "5 ^ 0",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:366"
+ },
+ {
+  "expr": "99 ^ 1",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:373"
+ },
+ {
+  "expr": "16 ^ 0.5",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:380"
+ },
+ {
+  "expr": "(-2) ^ 2",
+  "expect": "valid",
+  "src": "test_evaluator_simple.cpp:387"
+ },
+ {
+  "expr": "5 @ 3",
+  "expect": "error",
+  "src": "test_evaluator_simple.cpp:752"
+ },
+ {
+  "expr": "5 + 5",
+  "expect": "valid",
+  "src": "test_evaluator_syntax.cpp:234"
+ },
+ {
+  "expr": "5 ++",
+  "expect": "error",
+  "src": "test_evaluator_syntax.cpp:245"
+ },
+ {
+  "expr": "10 + 20",
+  "expect": "valid",
+  "src": "test_evaluator_syntax.cpp:282"
+ },
+ {
+  "expr": "1 + true",
+  "expect": "error",
+  "src": "test_errors.cpp:7"
+ },
+ {
+  "expr": "\"hello",
+  "expect": "error",
+  "src": "test_errors.cpp:14"
+ },
+ {
+  "expr": "(1 + 2",
+  "expect": "error",
+  "src": "test_errors.cpp:21"
+ },
+ {
+  "expr": "hint \"test\"",
+  "expect": "valid",
+  "src": "test_errors.cpp:28"
+ },
+ {
+  "expr": "2+3",
+  "expect": "valid",
+  "src": "test_expressions.cpp:12"
+ },
+ {
+  "expr": "10-7",
+  "expect": "valid",
+  "src": "test_expressions.cpp:18"
+ },
+ {
+  "expr": "4*5",
+  "expect": "valid",
+  "src": "test_expressions.cpp:23"
+ },
+ {
+  "expr": "15/3",
+  "expect": "valid",
+  "src": "test_expressions.cpp:28"
+ },
+ {
+  "expr": "17 % 5",
+  "expect": "valid",
+  "src": "test_expressions.cpp:33"
+ },
+ {
+  "expr": "(2+3)*4-1",
+  "expect": "valid",
+  "src": "test_expressions.cpp:38"
+ },
+ {
+  "expr": "createVehicle [\"Truck\", [50,0,50]]",
+  "expect": "valid",
+  "src": "test_integration.cpp:77"
+ },
+ {
+  "expr": "42 call {_this + 1}",
+  "expect": "valid",
+  "src": "test_sqs_integration.cpp:12"
+ },
+ {
+  "expr": "[10, 20] call {(_this select 0) + (_this select 1)}",
+  "expect": "valid",
+  "src": "test_sqs_integration.cpp:21"
+ },
+ {
+  "expr": "exit",
+  "expect": "valid",
+  "src": "test_sqs_integration.cpp:39"
+ },
+ {
+  "expr": "hint format [\"%1 test\", 42]",
+  "expect": "valid",
+  "src": "test_validate.cpp:49"
+ },
+ {
+  "expr": "player addEventHandler [\"killed\", {hint \"dead\"}]",
+  "expect": "valid",
+  "src": "addEventHandler.json"
+ },
+ {
+  "expr": "hint \"hello world\"",
+  "expect": "valid",
+  "src": "hint.json"
+ },
+ {
+  "expr": "hint format [\"%1 damage\", 0.5]",
+  "expect": "valid",
+  "src": "hint.json"
+ }
+]

@@ -1,0 +1,95 @@
+{
+ "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+ "name": "SQF (Poseidon)",
+ "scopeName": "source.sqf",
+ "patterns": [
+  {
+   "include": "#main"
+  }
+ ],
+ "repository": {
+  "main": {
+   "patterns": [
+    {
+     "include": "#comment-line"
+    },
+    {
+     "include": "#comment-block"
+    },
+    {
+     "include": "#string"
+    },
+    {
+     "include": "#number"
+    },
+    {
+     "include": "#constant"
+    },
+    {
+     "include": "#keyword"
+    },
+    {
+     "include": "#command"
+    },
+    {
+     "include": "#local-var"
+    },
+    {
+     "include": "#operator"
+    }
+   ]
+  },
+  "comment-line": {
+   "match": "//.*$",
+   "name": "comment.line.double-slash.sqf"
+  },
+  "comment-block": {
+   "begin": "/\\*",
+   "end": "\\*/",
+   "name": "comment.block.sqf"
+  },
+  "string": {
+   "name": "string.quoted.double.sqf",
+   "begin": "\"",
+   "end": "\"",
+   "patterns": [
+    {
+     "match": "\"\"",
+     "name": "constant.character.escape.sqf"
+    }
+   ]
+  },
+  "number": {
+   "patterns": [
+    {
+     "match": "(?i)(\\$|0x)[0-9a-f]+",
+     "name": "constant.numeric.hex.sqf"
+    },
+    {
+     "match": "(?i)\b\\d+(\\.\\d+)?(e[+-]?\\d+)?\b|\\.\\d+",
+     "name": "constant.numeric.float.sqf"
+    }
+   ]
+  },
+  "constant": {
+   "match": "(?i)\b(false|true|nil)\b",
+   "name": "constant.language.sqf"
+  },
+  "keyword": {
+   "match": "(?i)\b(exitWith|forEach|private|while|call|else|from|step|then|for|do|if|in|to)\b",
+   "name": "keyword.control.sqf"
+  },
+  "command": {
+   "match": "(?i)\b(setWaypointHousePosition|GetVehicleSubParamArray|GetWeaponSubParamArray|removeAllEventHandlers|setWaypointDescription|NearestObjectDistance|setWaypointCombatMode|setWaypointStatements|waypointAttachVehicle|GetAmmoSubParamArray|GetVehicleParamArray|onPlayerDisconnected|publicVariableString|setTriggerActivation|setTriggerStatements|setWaypointBehaviour|setWaypointFormation|triggerAttachVehicle|waypointAttachObject|DBG_switchLandscape|GetSelectionDammage|GetWeaponParamArray|SetSelectionDammage|fillWeaponsFromPool|getTurretDirAndElev|publicVariableArray|setWaypointBehavior|setWaypointPosition|synchronizeWaypoint|triggerAttachObject|GetVehicleSubParam|addMagazinePrecise|clearMagazineCargo|createGuardedPoint|getSelectionDamage|playerClearInjured|removeEventHandler|setEffectCondition|setSelectionDamage|setWaypointTimeout|GetAmmoParamArray|GetHitpointsNames|GetWeaponSubParam|assignAsCommander|clearMagazinePool|estimatedTimeLeft|onPlayerConnected|queryMagazinePool|setTriggerTimeout|setVectorDirAndUp|setWaypointScript|sliderSetPosition|addMagazineCargo|clearWeaponCargo|disableUserInput|enableSimulation|muzzleReloadTime|onMapSingleClick|parseSimpleArray|remoteExecRemove|removeAllWeapons|setFaceanimation|setObjectTexture|setWaypointSpeed|showCinemaBorder|waypointPosition|GetAmmoSubParam|GetVehicleParam|addEventHandler|addMagazinePool|buttonSetAction|clearWeaponPool|enableEndDialog|listConfigNames|moveInCommander|nearestBuilding|objectFromNetId|onBriefingGroup|onBriefingNotes|queryWeaponPool|removeMagazines|requiredVersion|secondaryWeapon|setCameraEffect|setViewDistance|setWaypointType|unassignVehicle|DBG_screenshot|GetWeaponParam|addWeaponCargo|animationPhase|assignAsDriver|assignAsGunner|camSetFovRange|deleteIdentity|deleteWaypoint|getMarkerColor|magazinesArray|onBriefingGear|onBriefingPlan|pickWeaponPool|preprocessFile|publicVariable|remoteExecCall|removeMagazine|setFlagTexture|setMarkerBrush|setMarkerColor|setMarkerShape|setMusicEffect|setRepairCargo|setSoundEffect|setTerrainGrid|setTitleEffect|setTriggerArea|setTriggerText|setTriggerType|sliderPosition|sliderSetRange|sliderSetSpeed|VBS_addFooter|VBS_addHeader|addWeaponPool|assignAsCargo|cheatsEnabled|commandFollow|commandTarget|countFriendly|createTrigger|createVehicle|deleteVehicle|diag_drawmode|getMarkerSize|getMarkerType|mapAnimCommit|mapLeftTopPos|nearestObject|playersNumber|primaryWeapon|putWeaponPool|setCombatMode|setMarkerSize|setMarkerText|setMarkerType|GetAmmoParam|VBS_addEvent|VBS_injuries|allowDammage|allowFleeing|buttonAction|camCommitted|camSetRelPos|camSetTarget|cameraEffect|commandWatch|countUnknown|createCenter|createDialog|createMarker|deleteCenter|deleteMarker|deleteStatus|getMarkerDir|getMarkerPos|lbSetPicture|leaveVehicle|loadIdentity|mapAnimClear|missionStart|moveInDriver|moveInGunner|removeAction|removeWeapon|saveIdentity|selectWeapon|serverResume|setAmmoCargo|setBehaviour|setFlagOwner|setFormation|setFuelCargo|setMarkerDir|setMarkerPos|setSpeedMode|setVectorDir|showWaypoint|shownCompass|shownWarrant|sideFriendly|switchCamera|vehicleRadio|addMagazine|addWaypoint|allowDamage|buildingPos|closeDialog|commandFire|commandMove|commandstop|createGroup|createShell|ctrlEnabled|ctrlSetText|ctrlVisible|deleteGroup|diag_enable|diag_toggle|enableRadio|flyInHeight|getVariable|globalRadio|laserTarget|lbSetCurSel|loadMission|mapAnimDone|markerColor|missionName|moveInCargo|musicVolume|saveMission|serverPause|setBehavior|setFlagSide|setIdentity|setOvercast|setRadioMsg|setVariable|setVectorUp|setVelocity|showCompass|showWarrant|sliderRange|sliderSpeed|soundLength|soundVolume|switchLight|usedVersion|vehicleChat|VBS_killed|allowGetIn|camCommand|camDestroy|camSetBank|camSetDive|combatMode|commandxxx|countEnemy|createUnit|ctrlEnable|formLeader|getDammage|globalChat|groupRadio|isEngineOn|knowsAbout|lbSetColor|lbSetValue|loadConfig|loadStatus|mapAnimAdd|markerSize|markerType|orderGetIn|publicExec|remoteExec|resistance|saveConfig|saveStatus|setAccTime|setCaptive|setDammage|setFormDir|setGroupid|setUnitPos|shownRadio|shownWatch|switchMove|NetworkId|VBS_kills|addAction|addRating|addWeapon|ammoArray|behaviour|benchmark|cadetMode|camCommit|camCreate|camSetDir|camSetFov|camSetPos|commander|countSide|countType|direction|disableAI|fadeMusic|fadeSound|flagOwner|formation|getDamage|getPosASL|groupChat|hasWeapon|hintCadet|lbPicture|lbSetData|lightIsOn|magazines|mapHeight|markerPos|newConfig|objStatus|openClass|playMusic|playSound|scudState|setDamage|setFriend|setPosASL|showDebug|showRadio|showWatch|sideEnemy|sideLogic|sideRadio|sizeofstr|speedMode|titleText|unitReady|vectorDir|worldSize|UnitById|addClass|addScore|addValue|behavior|cameraOn|canStand|civilian|ctrlShow|ctrlText|debugLog|diag_log|distance|doFollow|doTarget|engineOn|forceEnd|forceMap|getValue|getWPPos|getWorld|handsHit|inflamed|isServer|lbCurSel|lbDelete|loadFile|localize|mapWidth|playMove|position|saveGame|setMimic|setSkill|setWPPos|shownGps|shownMap|shownPad|sideChat|skipTime|someAmmo|titleCut|titleObj|titleRsc|toString|vectorUp|velocity|accTime|animate|canFire|canMove|captive|comment|cutText|dayTime|doWatch|endGame|fleeing|getMass|getMove|grpNull|inflame|lbClear|lbColor|lbValue|logInfo|objNull|saveVar|setDate|setFace|setFuel|setRain|showGps|showMap|showPad|stopped|textLog|toArray|vehicle|weapons|action|boolEq|boolNe|cutObj|cutRsc|damage|dialog|doFire|doMove|dostop|driver|format|getDir|getPos|gunner|isNull|lbData|lbSize|lbText|leader|lockWp|locked|object|player|random|rating|resize|reveal|select|setDir|setFog|setPos|substr|typeOf|alive|atan2|count|doxxx|group|hintC|isJIP|lbAdd|local|netId|score|skill|speed|units|acos|ammo|asin|atan|crew|drop|east|exec|exit|find|fire|flag|fuel|goto|hint|join|land|list|lock|move|name|side|sqrt|stop|time|west|abs|and|atg|cos|deg|exp|log|mod|not|rad|say|set|sin|str|tan|ln|or|pi|tg)\b",
+   "name": "support.function.sqf"
+  },
+  "local-var": {
+   "match": "\b_[A-Za-z0-9_]+\b",
+   "name": "variable.other.local.sqf"
+  },
+  "operator": {
+   "match": "==|!=|<=|>=|&&|\\|\\||[-+*/%^<>=!]",
+   "name": "keyword.operator.sqf"
+  }
+ }
+}

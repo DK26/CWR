@@ -1,0 +1,20 @@
+[package]
+name = "poseidon-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "poseidon_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "poseidon-check"
+path = "src/main.rs"
+
+[dependencies]
+poseidon-syntax = { path = "../poseidon-syntax" }
+poseidon-catalog = { path = "../poseidon-catalog" }
+serde_json.workspace = true

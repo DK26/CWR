@@ -1,0 +1,52 @@
+{
+  "name": "poseidon-languages",
+  "displayName": "Poseidon Languages (SQF / SQS / config)",
+  "description": "Syntax highlighting + language server for classic Arma: Cold War Assault (originally Operation Flashpoint) resources: SQF, SQS, and ParamFile configs (.sqm/.ext/.cfg/config.cpp). Independent community tool; not affiliated with Bohemia Interactive, Codemasters, or EA.",
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Programming Languages"],
+  "activationEvents": [],
+  "main": "./client/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "sqf",
+        "aliases": ["SQF", "sqf"],
+        "extensions": [".sqf"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "sqs",
+        "aliases": ["SQS", "sqs"],
+        "extensions": [".sqs"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "paramfile",
+        "aliases": ["ParamFile", "OFP Config"],
+        "extensions": [".sqm", ".ext", ".cfg"],
+        "filenames": ["config.cpp"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      { "language": "sqf", "scopeName": "source.sqf", "path": "./syntaxes/sqf.tmLanguage.json" },
+      { "language": "sqs", "scopeName": "source.sqs", "path": "./syntaxes/sqs.tmLanguage.json" },
+      { "language": "paramfile", "scopeName": "source.paramfile", "path": "./syntaxes/paramfile.tmLanguage.json" }
+    ],
+    "configuration": {
+      "title": "Poseidon Languages",
+      "properties": {
+        "poseidon.server.path": {
+          "type": "string",
+          "default": "poseidon-lsp",
+          "description": "Path to the poseidon-lsp executable (build it with `cargo build --release` in the lsp/ workspace)."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}
