@@ -1,6 +1,7 @@
 #include <Poseidon/World/Entities/Infantry/SoldierOldCommon.hpp>
 #include <Poseidon/Core/Application.hpp>
 #include <Poseidon/Input/InputSubsystem.hpp>
+#include <Poseidon/UI/Settings/AspectRatio.hpp>
 #include <Poseidon/Foundation/Algorithms/Qsort.hpp>
 #include <Poseidon/Foundation/Common/FltOpts.hpp>
 #include <Poseidon/Foundation/Containers/Array.hpp>
@@ -115,15 +116,7 @@ Object* Man::GetProxy(LODShapeWithShadow*& shape, int level, Matrix4& transform,
     {
         if (ShowItemInHand())
         {
-            const WeaponType* weapon = nullptr;
-            for (int i = 0; i < NWeaponSystems(); i++)
-            {
-                if (GetWeaponSystem(i)->_weaponType & MaskSlotBinocular)
-                {
-                    weapon = GetWeaponSystem(i);
-                    break;
-                }
-            }
+            const WeaponType* weapon = Poseidon::FindBinocularWeapon(_weapons);
             if (weapon)
             {
                 pshape = weapon->_model;
@@ -134,15 +127,7 @@ Object* Man::GetProxy(LODShapeWithShadow*& shape, int level, Matrix4& transform,
     {
         if (ShowItemInRightHand())
         {
-            const WeaponType* weapon = nullptr;
-            for (int i = 0; i < NWeaponSystems(); i++)
-            {
-                if (GetWeaponSystem(i)->_weaponType & MaskSlotBinocular)
-                {
-                    weapon = GetWeaponSystem(i);
-                    break;
-                }
-            }
+            const WeaponType* weapon = Poseidon::FindBinocularWeapon(_weapons);
             if (weapon)
             {
                 pshape = weapon->_model;
@@ -288,14 +273,7 @@ void Man::DrawProxies(int level, ClipFlags clipFlags, const Matrix4& transform, 
         {
             if (ShowItemInHand())
             {
-                for (int i = 0; i < NWeaponSystems(); i++)
-                {
-                    if (GetWeaponSystem(i)->_weaponType & MaskSlotBinocular)
-                    {
-                        weapon = GetWeaponSystem(i);
-                        break;
-                    }
-                }
+                weapon = Poseidon::FindBinocularWeapon(_weapons);
                 if (weapon)
                 {
                     pshape = weapon->_model;
@@ -306,14 +284,7 @@ void Man::DrawProxies(int level, ClipFlags clipFlags, const Matrix4& transform, 
         {
             if (ShowItemInRightHand())
             {
-                for (int i = 0; i < NWeaponSystems(); i++)
-                {
-                    if (GetWeaponSystem(i)->_weaponType & MaskSlotBinocular)
-                    {
-                        weapon = GetWeaponSystem(i);
-                        break;
-                    }
-                }
+                weapon = Poseidon::FindBinocularWeapon(_weapons);
                 if (weapon)
                 {
                     pshape = weapon->_model;
@@ -464,8 +435,9 @@ void Man::DrawNVOptics()
         {
             int phase = toIntFloor(5.0f * GRandGen.RandomValue());
             muzzle->_animFire.SetPhase(oShape, 0, phase);
-            // 4:3 vignette — pillarbox the widescreen lateral strips
-            Draw2D(oShape, 0, PackedWhite, /*preserveAspect4x3*/ true);
+            // 4:3 vignette — preserve 4:3 + pillarbox while bars are on, else stretch.
+            const bool preserve4x3 = AspectRatio::ArePillarboxBarsEnabled();
+            Draw2D(oShape, 0, PackedWhite, /*preserveAspect4x3*/ preserve4x3);
             Object::DrawWidescreenPillarbox();
         }
     }
@@ -579,9 +551,10 @@ void Man::Draw(int level, ClipFlags clipFlags, const FrameBase& pos)
                         muzzle->_animFire.Hide(oShape, 0);
                     }
                     _mGunFireFrames--;
-                    // binoculars are a 4:3 vignette; scopes keep full viewport width
+                    // binoculars are a 4:3 vignette (scopes keep full width) — stretch when bars off.
                     const bool isBinocular = BinocularSelected();
-                    Draw2D(oShape, 0, GetOpticsColor(this), /*preserveAspect4x3*/ isBinocular);
+                    const bool preserve4x3 = isBinocular && AspectRatio::ArePillarboxBarsEnabled();
+                    Draw2D(oShape, 0, GetOpticsColor(this), /*preserveAspect4x3*/ preserve4x3);
                     if (isBinocular)
                         Object::DrawWidescreenPillarbox();
                 }

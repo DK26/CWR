@@ -6,20 +6,20 @@ use sqlx::{AnyPool, Row};
 
 use crate::model::{
     DirectoryServerRecord, ListServersQuery, RegisterServerRequest, ServerPopulationSample,
-    ServerRecentSession, VerificationState,
+    ServerRecentSession, ServerVersionGroup, VerificationState,
 };
 
-/// Consecutive failed probes before a server is flipped to `unreachable` (and hidden from
-/// the default browse). Tolerates transient blips while still reacting within a few rounds.
-const UNREACHABLE_AFTER_FAILURES: i64 = 3;
+/// Consecutive failed probes before a server is flipped to `unreachable` and hidden from
+/// the default browse.
+const UNREACHABLE_AFTER_FAILURES: i64 = 1;
 
 /// Default browse hides a server whose last heartbeat is older than this (publisher
-/// heartbeats every ~30s, so this is several missed beats).
-const HEARTBEAT_FRESH_MS: i64 = 120_000;
+/// heartbeats every ~30s, so this is roughly two missed beats).
+const HEARTBEAT_FRESH_MS: i64 = 60_000;
 
 /// An `unreachable` verdict hides a row only while this fresh. A stale verdict (the prober
 /// stopped) expires, so the server reappears on heartbeat alone — self-healing.
-const UNREACHABLE_HIDE_MS: i64 = 300_000;
+const UNREACHABLE_HIDE_MS: i64 = 60_000;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Dialect {
@@ -38,6 +38,14 @@ pub struct ServerDirectory {
 
 /// Back-compat alias: the directory used to be SQLite-only.
 pub type SqliteServerDirectory = ServerDirectory;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum TokenRelocation {
+    NotFound,
+    Unchanged,
+    Moved,
+    Conflict,
+}
 
 /// Build a sqlx SQLite connection URL from a filesystem path that round-trips on every
 /// platform. The sqlx `Any` layer first parses the string with the `url` crate, then the
@@ -84,6 +92,7 @@ impl ServerDirectory {
             .await
             .context("initializing schema")?;
         self.migrate_servers().await?;
+        self.create_post_migration_indexes().await?;
         Ok(())
     }
 
@@ -109,7 +118,8 @@ impl ServerDirectory {
             Dialect::Sqlite => "INTEGER",
         };
         // (column, type) — booleans are stored as 0/1 integers, like the rest of the schema.
-        let additions: [(&str, &str); 16] = [
+        let additions: [(&str, &str); 18] = [
+            ("app_name", "TEXT"),
             ("version_tag", "TEXT"),
             ("time_left", int_type),
             ("state_elapsed_seconds", int_type),
@@ -126,6 +136,7 @@ impl ServerDirectory {
             ("param1", "TEXT"),
             ("param2", "TEXT"),
             ("required_addons", "TEXT"),
+            ("mod_packages_json", "TEXT"),
         ];
         // Re-read in case the rename above changed the set.
         let columns = self.server_columns().await?;
@@ -133,7 +144,13 @@ impl ServerDirectory {
             if columns.iter().any(|c| c == name) {
                 continue;
             }
-            let default = if ty == "TEXT" { "''" } else { "0" };
+            let default = if name == "mod_packages_json" {
+                "'[]'"
+            } else if ty == "TEXT" {
+                "''"
+            } else {
+                "0"
+            };
             sqlx::raw_sql(&format!(
                 "ALTER TABLE servers ADD COLUMN {name} {ty} NOT NULL DEFAULT {default}"
             ))
@@ -141,6 +158,40 @@ impl ServerDirectory {
             .await
             .with_context(|| format!("adding servers.{name}"))?;
         }
+        let columns = self.server_columns().await?;
+        if !columns
+            .iter()
+            .any(|column| column == "consecutive_failures")
+        {
+            sqlx::raw_sql(&format!(
+                "ALTER TABLE servers ADD COLUMN consecutive_failures {int_type} NOT NULL DEFAULT 0"
+            ))
+            .execute(&self.pool)
+            .await
+            .context("adding servers.consecutive_failures")?;
+        }
+        if !columns.iter().any(|column| column == "token_hash") {
+            sqlx::raw_sql("ALTER TABLE servers ADD COLUMN token_hash TEXT")
+                .execute(&self.pool)
+                .await
+                .context("adding servers.token_hash")?;
+        }
+        Ok(())
+    }
+
+    async fn create_post_migration_indexes(&self) -> Result<()> {
+        sqlx::raw_sql(
+            "CREATE INDEX IF NOT EXISTS idx_servers_app_version ON servers(app_name, actver, version_tag);",
+        )
+        .execute(&self.pool)
+        .await
+        .context("creating post-migration indexes")?;
+        sqlx::raw_sql(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_servers_token_hash ON servers(token_hash) WHERE token_hash IS NOT NULL;",
+        )
+        .execute(&self.pool)
+        .await
+        .context("creating unique server token index; duplicate token hashes require operator cleanup")?;
         Ok(())
     }
 
@@ -184,20 +235,50 @@ impl ServerDirectory {
         request: RegisterServerRequest,
         now_unix_ms: i64,
     ) -> Result<DirectoryServerRecord> {
+        self.register_record(request, now_unix_ms, None)
+            .await?
+            .context("unconditional server registration was not applied")
+    }
+
+    pub async fn register_with_token_claim(
+        &self,
+        request: RegisterServerRequest,
+        now_unix_ms: i64,
+        token_hash: &str,
+        expected_token_hash: Option<&str>,
+    ) -> Result<Option<DirectoryServerRecord>> {
+        self.register_record(
+            request,
+            now_unix_ms,
+            Some((token_hash, expected_token_hash)),
+        )
+        .await
+    }
+
+    async fn register_record(
+        &self,
+        request: RegisterServerRequest,
+        now_unix_ms: i64,
+        token_claim: Option<(&str, Option<&str>)>,
+    ) -> Result<Option<DirectoryServerRecord>> {
         let record = request.into_record(now_unix_ms);
-        sqlx::query(&self.bind_sql(
+        let claimed_hash = token_claim.map(|(hash, _)| hash);
+        let expected_hash = token_claim.and_then(|(_, expected)| expected);
+        let claim_token = i64::from(token_claim.is_some());
+        let affected = sqlx::query(&self.bind_sql(
             "INSERT INTO servers (
-                server_id, address, hostport, hostname, gametype, actver, reqver, version_tag, state,
+                app_name, server_id, address, hostport, hostname, gametype, actver, reqver, version_tag, state,
                 numplayers, maxplayers, password, mod_list, equal_mod_required, transport_impl,
                 platform, last_seen_unix_ms, verification_state, last_observed_unix_ms, observed_reachable,
                 time_left, state_elapsed_seconds,
                 map_name, cadet, difficulty, jip, disabled_ai, respawn, respawn_delay, locked, dedicated,
-                description, param1, param2, required_addons
+                description, param1, param2, required_addons, mod_packages_json, token_hash
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
             ON CONFLICT(server_id) DO UPDATE SET
+                app_name = excluded.app_name,
                 address = excluded.address,
                 hostport = excluded.hostport,
                 hostname = excluded.hostname,
@@ -228,8 +309,12 @@ impl ServerDirectory {
                 description = excluded.description,
                 param1 = excluded.param1,
                 param2 = excluded.param2,
-                required_addons = excluded.required_addons",
+                required_addons = excluded.required_addons,
+                mod_packages_json = excluded.mod_packages_json,
+                token_hash = CASE WHEN ? <> 0 THEN excluded.token_hash ELSE servers.token_hash END
+            WHERE ? = 0 OR servers.token_hash IS NULL OR servers.token_hash = ?",
         ))
+        .bind(&record.app_name)
         .bind(&record.server_id)
         .bind(&record.address)
         .bind(i64::from(record.hostport))
@@ -265,8 +350,18 @@ impl ServerDirectory {
         .bind(&record.param1)
         .bind(&record.param2)
         .bind(&record.required_addons)
+        .bind(serde_json::to_string(&record.mod_packages)?)
+        .bind(claimed_hash)
+        .bind(claim_token)
+        .bind(claim_token)
+        .bind(expected_hash)
         .execute(&self.pool)
-        .await?;
+        .await?
+        .rows_affected();
+
+        if affected == 0 {
+            return Ok(None);
+        }
 
         self.insert_sample(
             &record.server_id,
@@ -275,9 +370,7 @@ impl ServerDirectory {
         )
         .await?;
 
-        self.get(&record.server_id)
-            .await?
-            .with_context(|| format!("server {} missing after upsert", record.server_id))
+        self.get(&record.server_id).await
     }
 
     pub async fn observe(
@@ -335,6 +428,115 @@ impl ServerDirectory {
         Ok(row.and_then(|row| row.try_get::<Option<String>, _>(0).ok().flatten()))
     }
 
+    pub async fn server_id_for_token_hash(&self, token_hash: &str) -> Result<Option<String>> {
+        let row = sqlx::query(&self.bind_sql("SELECT server_id FROM servers WHERE token_hash = ?"))
+            .bind(token_hash)
+            .fetch_optional(&self.pool)
+            .await?;
+        Ok(row.and_then(|row| row.try_get::<String, _>(0).ok()))
+    }
+
+    pub async fn relocate_token_owner(
+        &self,
+        token_hash: &str,
+        new_server_id: &str,
+        new_address: &str,
+        new_hostport: u16,
+        now_unix_ms: i64,
+        recovery_ms: i64,
+    ) -> Result<TokenRelocation> {
+        let mut transaction = self.pool.begin().await?;
+        let owner_query = match self.dialect {
+            Dialect::Postgres => "SELECT server_id FROM servers WHERE token_hash = ? FOR UPDATE",
+            Dialect::Sqlite => "SELECT server_id FROM servers WHERE token_hash = ?",
+        };
+        let owner = sqlx::query(&self.bind_sql(owner_query))
+            .bind(token_hash)
+            .fetch_optional(&mut *transaction)
+            .await?
+            .and_then(|row| row.try_get::<String, _>(0).ok());
+        let Some(old_server_id) = owner else {
+            transaction.rollback().await?;
+            return Ok(TokenRelocation::NotFound);
+        };
+        if old_server_id == new_server_id {
+            transaction.rollback().await?;
+            return Ok(TokenRelocation::Unchanged);
+        }
+
+        let target_query = match self.dialect {
+            Dialect::Postgres => {
+                "SELECT token_hash, last_seen_unix_ms FROM servers WHERE server_id = ? FOR UPDATE"
+            }
+            Dialect::Sqlite => {
+                "SELECT token_hash, last_seen_unix_ms FROM servers WHERE server_id = ?"
+            }
+        };
+        let target = sqlx::query(&self.bind_sql(target_query))
+            .bind(new_server_id)
+            .fetch_optional(&mut *transaction)
+            .await?;
+        if let Some(target) = target {
+            let target_hash = target.try_get::<Option<String>, _>(0)?;
+            let target_last_seen = target.try_get::<i64, _>(1)?;
+            if target_hash.as_deref() != Some(token_hash)
+                && now_unix_ms - target_last_seen < recovery_ms
+            {
+                transaction.rollback().await?;
+                return Ok(TokenRelocation::Conflict);
+            }
+            sqlx::query(&self.bind_sql("DELETE FROM servers WHERE server_id = ?"))
+                .bind(new_server_id)
+                .execute(&mut *transaction)
+                .await?;
+        }
+
+        sqlx::query(&self.bind_sql(
+            "UPDATE servers SET server_id = ?, address = ?, hostport = ? WHERE server_id = ?",
+        ))
+        .bind(new_server_id)
+        .bind(new_address)
+        .bind(i64::from(new_hostport))
+        .bind(&old_server_id)
+        .execute(&mut *transaction)
+        .await?;
+
+        sqlx::query(&self.bind_sql(
+            "DELETE FROM server_samples
+             WHERE server_id = ? AND observed_unix_ms IN (
+                 SELECT observed_unix_ms FROM server_samples WHERE server_id = ?
+             )",
+        ))
+        .bind(&old_server_id)
+        .bind(new_server_id)
+        .execute(&mut *transaction)
+        .await?;
+        sqlx::query(&self.bind_sql("UPDATE server_samples SET server_id = ? WHERE server_id = ?"))
+            .bind(new_server_id)
+            .bind(&old_server_id)
+            .execute(&mut *transaction)
+            .await?;
+
+        sqlx::query(&self.bind_sql(
+            "DELETE FROM server_sessions
+             WHERE server_id = ? AND ended_unix_ms IN (
+                 SELECT ended_unix_ms FROM server_sessions WHERE server_id = ?
+             )",
+        ))
+        .bind(&old_server_id)
+        .bind(new_server_id)
+        .execute(&mut *transaction)
+        .await?;
+        sqlx::query(&self.bind_sql("UPDATE server_sessions SET server_id = ? WHERE server_id = ?"))
+            .bind(new_server_id)
+            .bind(&old_server_id)
+            .execute(&mut *transaction)
+            .await?;
+
+        transaction.commit().await?;
+        Ok(TokenRelocation::Moved)
+    }
+
     pub async fn get(&self, server_id: &str) -> Result<Option<DirectoryServerRecord>> {
         let row =
             sqlx::query(&self.bind_sql(&format!("{SELECT_SERVER_COLUMNS} WHERE server_id = ?")))
@@ -358,11 +560,31 @@ impl ServerDirectory {
 
         let hostname_filter = query.hostname.as_ref().map(|value| value.to_lowercase());
         let mission_filter = query.gametype.as_ref().map(|value| value.to_lowercase());
+        let app_filter = query.app_name.as_ref().map(|value| value.to_lowercase());
+        let version_tag_filter = query.version_tag.as_ref().map(|value| value.to_lowercase());
         let include_unverified_servers = query.include_unverified_servers.unwrap_or(false);
         let include_full_servers = query.include_full_servers.unwrap_or(true);
         let include_passworded_servers = query.include_passworded_servers.unwrap_or(false);
 
         records.retain(|record| {
+            if let Some(filter) = &app_filter {
+                if record.app_name.to_lowercase() != *filter {
+                    return false;
+                }
+            }
+
+            if let Some(actver) = query.actver {
+                if record.actver != actver {
+                    return false;
+                }
+            }
+
+            if let Some(filter) = &version_tag_filter {
+                if record.version_tag.to_lowercase() != *filter {
+                    return false;
+                }
+            }
+
             if let Some(filter) = &hostname_filter {
                 if !record.hostname.to_lowercase().contains(filter) {
                     return false;
@@ -431,6 +653,37 @@ impl ServerDirectory {
         }
 
         Ok(records)
+    }
+
+    pub async fn version_groups(
+        &self,
+        query: &ListServersQuery,
+        now_unix_ms: i64,
+    ) -> Result<Vec<ServerVersionGroup>> {
+        let mut groups = Vec::<ServerVersionGroup>::new();
+        for record in self.list(query, now_unix_ms).await? {
+            if let Some(group) = groups.iter_mut().find(|group| {
+                group.app_name == record.app_name
+                    && group.actver == record.actver
+                    && group.version_tag == record.version_tag
+            }) {
+                group.servers += 1;
+            } else {
+                groups.push(ServerVersionGroup {
+                    app_name: record.app_name,
+                    actver: record.actver,
+                    version_tag: record.version_tag,
+                    servers: 1,
+                });
+            }
+        }
+        groups.sort_by(|lhs, rhs| {
+            lhs.app_name
+                .cmp(&rhs.app_name)
+                .then_with(|| rhs.actver.cmp(&lhs.actver))
+                .then_with(|| rhs.version_tag.cmp(&lhs.version_tag))
+        });
+        Ok(groups)
     }
 
     pub async fn unregister(&self, server_id: &str) -> Result<bool> {
@@ -591,51 +844,60 @@ impl ServerDirectory {
 }
 
 const SELECT_SERVER_COLUMNS: &str = "SELECT
-    server_id, address, hostport, hostname, gametype, actver, reqver, version_tag, state,
+    app_name, server_id, address, hostport, hostname, gametype, actver, reqver, version_tag, state,
     numplayers, maxplayers, password, mod_list, equal_mod_required, transport_impl,
     platform, last_seen_unix_ms, verification_state, last_observed_unix_ms, observed_reachable,
     time_left, state_elapsed_seconds,
     map_name, cadet, difficulty, jip, disabled_ai, respawn, respawn_delay, locked, dedicated,
-    description, param1, param2, required_addons
+    description, param1, param2, required_addons, mod_packages_json
 FROM servers";
 
 fn map_row(row: &AnyRow) -> Result<DirectoryServerRecord> {
     Ok(DirectoryServerRecord {
-        server_id: row.try_get(0)?,
-        address: row.try_get(1)?,
-        hostport: u16::try_from(row.try_get::<i64, _>(2)?).unwrap_or(0),
-        hostname: row.try_get(3)?,
-        gametype: row.try_get(4)?,
-        actver: i32::try_from(row.try_get::<i64, _>(5)?).unwrap_or(0),
-        reqver: i32::try_from(row.try_get::<i64, _>(6)?).unwrap_or(0),
-        version_tag: row.try_get(7)?,
-        state: i32::try_from(row.try_get::<i64, _>(8)?).unwrap_or(0),
-        numplayers: i32::try_from(row.try_get::<i64, _>(9)?).unwrap_or(0),
-        maxplayers: i32::try_from(row.try_get::<i64, _>(10)?).unwrap_or(0),
-        password: row.try_get::<i64, _>(11)? != 0,
-        mod_list: row.try_get(12)?,
-        equal_mod_required: row.try_get::<i64, _>(13)? != 0,
-        transport_impl: row.try_get(14)?,
-        platform: row.try_get(15)?,
-        last_seen_unix_ms: row.try_get(16)?,
-        verification_state: verification_state_from_str(&row.try_get::<String, _>(17)?)?,
-        last_observed_unix_ms: row.try_get(18)?,
-        observed_reachable: row.try_get::<Option<i64>, _>(19)?.map(|value| value != 0),
-        time_left: i32::try_from(row.try_get::<i64, _>(20)?).unwrap_or(0),
-        state_elapsed_seconds: i32::try_from(row.try_get::<i64, _>(21)?).unwrap_or(0),
-        map_name: row.try_get(22)?,
-        cadet: row.try_get::<i64, _>(23)? != 0,
-        difficulty: i32::try_from(row.try_get::<i64, _>(24)?).unwrap_or(0),
-        jip: row.try_get::<i64, _>(25)? != 0,
-        disabled_ai: row.try_get::<i64, _>(26)? != 0,
-        respawn: i32::try_from(row.try_get::<i64, _>(27)?).unwrap_or(0),
-        respawn_delay: i32::try_from(row.try_get::<i64, _>(28)?).unwrap_or(0),
-        locked: row.try_get::<i64, _>(29)? != 0,
-        dedicated: row.try_get::<i64, _>(30)? != 0,
-        description: row.try_get(31)?,
-        param1: row.try_get(32)?,
-        param2: row.try_get(33)?,
-        required_addons: row.try_get(34)?,
+        app_name: row.try_get(0)?,
+        server_id: row.try_get(1)?,
+        address: row.try_get(2)?,
+        hostport: u16::try_from(row.try_get::<i64, _>(3)?).unwrap_or(0),
+        hostname: row.try_get(4)?,
+        gametype: row.try_get(5)?,
+        actver: i32::try_from(row.try_get::<i64, _>(6)?).unwrap_or(0),
+        reqver: i32::try_from(row.try_get::<i64, _>(7)?).unwrap_or(0),
+        version_tag: row.try_get(8)?,
+        state: i32::try_from(row.try_get::<i64, _>(9)?).unwrap_or(0),
+        numplayers: i32::try_from(row.try_get::<i64, _>(10)?).unwrap_or(0),
+        maxplayers: i32::try_from(row.try_get::<i64, _>(11)?).unwrap_or(0),
+        password: row.try_get::<i64, _>(12)? != 0,
+        mod_list: row.try_get(13)?,
+        equal_mod_required: row.try_get::<i64, _>(14)? != 0,
+        transport_impl: row.try_get(15)?,
+        platform: row.try_get(16)?,
+        last_seen_unix_ms: row.try_get(17)?,
+        verification_state: verification_state_from_str(&row.try_get::<String, _>(18)?)?,
+        last_observed_unix_ms: row.try_get(19)?,
+        observed_reachable: row.try_get::<Option<i64>, _>(20)?.map(|value| value != 0),
+        time_left: i32::try_from(row.try_get::<i64, _>(21)?).unwrap_or(0),
+        state_elapsed_seconds: i32::try_from(row.try_get::<i64, _>(22)?).unwrap_or(0),
+        map_name: row.try_get(23)?,
+        cadet: row.try_get::<i64, _>(24)? != 0,
+        difficulty: i32::try_from(row.try_get::<i64, _>(25)?).unwrap_or(0),
+        jip: row.try_get::<i64, _>(26)? != 0,
+        disabled_ai: row.try_get::<i64, _>(27)? != 0,
+        respawn: i32::try_from(row.try_get::<i64, _>(28)?).unwrap_or(0),
+        respawn_delay: i32::try_from(row.try_get::<i64, _>(29)?).unwrap_or(0),
+        locked: row.try_get::<i64, _>(30)? != 0,
+        dedicated: row.try_get::<i64, _>(31)? != 0,
+        description: row.try_get(32)?,
+        param1: row.try_get(33)?,
+        param2: row.try_get(34)?,
+        required_addons: row.try_get(35)?,
+        mod_packages: {
+            let value = row.try_get::<String, _>(36)?;
+            if value.trim().is_empty() {
+                Vec::new()
+            } else {
+                serde_json::from_str(&value)?
+            }
+        },
         token: None,
     })
 }
@@ -684,6 +946,7 @@ PRAGMA journal_mode = WAL;
 PRAGMA synchronous = NORMAL;
 CREATE TABLE IF NOT EXISTS servers (
     server_id TEXT PRIMARY KEY,
+    app_name TEXT NOT NULL DEFAULT '',
     address TEXT NOT NULL,
     hostport INTEGER NOT NULL,
     hostname TEXT NOT NULL,
@@ -718,6 +981,7 @@ CREATE TABLE IF NOT EXISTS servers (
     param1 TEXT NOT NULL DEFAULT '',
     param2 TEXT NOT NULL DEFAULT '',
     required_addons TEXT NOT NULL DEFAULT '',
+    mod_packages_json TEXT NOT NULL DEFAULT '[]',
     consecutive_failures INTEGER NOT NULL DEFAULT 0,
     token_hash TEXT
 );
@@ -749,6 +1013,7 @@ CREATE INDEX IF NOT EXISTS idx_server_sessions_server_time
 const SCHEMA_POSTGRES: &str = "
 CREATE TABLE IF NOT EXISTS servers (
     server_id TEXT PRIMARY KEY,
+    app_name TEXT NOT NULL DEFAULT '',
     address TEXT NOT NULL,
     hostport BIGINT NOT NULL,
     hostname TEXT NOT NULL,
@@ -783,6 +1048,7 @@ CREATE TABLE IF NOT EXISTS servers (
     param1 TEXT NOT NULL DEFAULT '',
     param2 TEXT NOT NULL DEFAULT '',
     required_addons TEXT NOT NULL DEFAULT '',
+    mod_packages_json TEXT NOT NULL DEFAULT '[]',
     consecutive_failures BIGINT NOT NULL DEFAULT 0,
     token_hash TEXT
 );

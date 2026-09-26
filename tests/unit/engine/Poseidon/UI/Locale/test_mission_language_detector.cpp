@@ -2,6 +2,8 @@
 #include <Poseidon/UI/Locale/MissionHtmlLocalization.hpp>
 #include <Poseidon/UI/Locale/MissionLanguageDetector.hpp>
 #include <Poseidon/UI/Locale/SupportedLanguages.hpp>
+#include <Poseidon/Game/Mission/MissionTemplateCatalog.hpp>
+#include <Poseidon/Core/ModSystem.hpp>
 #include <Poseidon/IO/ParamFile/ParamFile.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -23,8 +25,11 @@ using Poseidon::LocalizeString;
 using Poseidon::FindLocalizedMissionHtmlFile;
 using Poseidon::GetLanguage;
 using Poseidon::GetMissionStringtableFileForHtml;
+using Poseidon::ListMissionTemplates;
 using Poseidon::LoadLocalizedMissionHtmlUtf8;
 using Poseidon::LoadStringtable;
+using Poseidon::MissionTemplateEntry;
+using Poseidon::ResolveMissionTemplateDisplayName;
 using Poseidon::SetLanguage;
 
 namespace
@@ -157,6 +162,23 @@ TEST_CASE("mission language detector finds voice in stock sound subdir layout", 
     const auto info = MissionLanguageDetector::Detect(DemoSoundSubdirFixtureMissionPath().c_str());
 
     CHECK(MissionLanguageDetector::FormatVoiceLanguages(info) == RString("EN CZ"));
+    CHECK(FlagsFor(info, "English").voice);
+    CHECK(FlagsFor(info, "Czech").voice);
+}
+
+TEST_CASE("mission language detector finds differently cased loose sound files", "[ui][missions][languages]")
+{
+    const auto root = std::filesystem::temp_directory_path() /
+                      ("cwr-mission-language-case-" +
+                       std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".Noe");
+    std::filesystem::create_directories(root / "sound");
+    std::ofstream(root / "description.ext") << "class CfgSounds { class Line { sound[] = {\"RADIO.ogg\", 1, 1}; }; };";
+    std::ofstream(root / "sound" / "radio.ogg") << "dummy";
+    std::ofstream(root / "sound" / "radio.Czech.ogg") << "dummy";
+
+    const auto info = MissionLanguageDetector::Detect(root.string().c_str());
+    std::filesystem::remove_all(root);
+
     CHECK(FlagsFor(info, "English").voice);
     CHECK(FlagsFor(info, "Czech").voice);
 }
@@ -312,6 +334,115 @@ TEST_CASE("mission briefing name reload uses raw sqm token after language switch
 
     SetLanguage("Czech");
     CHECK(LoadLocalizedMissionBriefingName(root.string().c_str(), "fallback") == RString("Přepadení (Demo)"));
+}
+
+TEST_CASE("mission template display name follows mission-local stringtable language",
+          "[ui][missions][languages][templates]")
+{
+    const std::filesystem::path root = HtmlStringtableFixtureMissionPath();
+    LoadFixtureMissionStringtable(root);
+
+    SetLanguage("English");
+    CHECK(ResolveMissionTemplateDisplayName(root.string().c_str(), "HtmlStringtable") == RString("Ambush (Demo)"));
+
+    SetLanguage("Czech");
+    CHECK(ResolveMissionTemplateDisplayName(root.string().c_str(), "HtmlStringtable") == RString("Přepadení (Demo)"));
+
+    SetLanguage("English");
+}
+
+TEST_CASE("mission template catalog lists matching directories before banks", "[ui][missions][templates]")
+{
+    const auto uniqueId = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
+    const std::filesystem::path root = std::filesystem::temp_directory_path() / ("ofpr-template-catalog-" + uniqueId);
+    std::filesystem::create_directories(root / "Templates" / "DirectoryMission.Eden");
+    std::filesystem::create_directories(root / "Templates" / "WrongWorld.Noe");
+    std::ofstream(root / "Templates" / "BankMission.Eden.pbo").put('x');
+    std::ofstream(root / "Templates" / "TextFile.Eden.txt").put('x');
+
+    const std::filesystem::path originalPath = std::filesystem::current_path();
+    std::filesystem::current_path(root);
+
+    AutoArray<MissionTemplateEntry> templates;
+    ListMissionTemplates(templates, true, "Eden");
+
+    std::filesystem::current_path(originalPath);
+    std::filesystem::remove_all(root);
+
+    REQUIRE(templates.Size() == 2);
+    CHECK(templates[0].name == RString("DirectoryMission"));
+    CHECK(templates[0].basePath == RString("Templates\\DirectoryMission.Eden"));
+    CHECK_FALSE(templates[0].bank);
+    CHECK(templates[1].name == RString("BankMission"));
+    CHECK(templates[1].basePath == RString("Templates\\BankMission.Eden"));
+    CHECK(templates[1].bank);
+}
+
+// A mod's packed templates under <mod>/Templates list next to the base game's.
+TEST_CASE("mission template catalog lists a mod's packed templates", "[ui][missions][templates]")
+{
+    const auto uniqueId = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
+    const std::filesystem::path root = std::filesystem::temp_directory_path() / ("ofpr-template-mod-" + uniqueId);
+    std::filesystem::create_directories(root / "Templates"); // base root present but empty
+    std::filesystem::create_directories(root / "@triTpl" / "Templates");
+    std::ofstream(root / "@triTpl" / "Templates" / "ModTemplate.Eden.pbo").put('x');
+
+    const std::filesystem::path originalPath = std::filesystem::current_path();
+    std::filesystem::current_path(root);
+    Poseidon::ModSystem::SetModPath((root / "@triTpl").string().c_str());
+
+    AutoArray<MissionTemplateEntry> templates;
+    ListMissionTemplates(templates, true, "Eden");
+
+    Poseidon::ModSystem::SetModPath("");
+    std::filesystem::current_path(originalPath);
+
+    bool found = false;
+    for (int i = 0; i < templates.Size(); ++i)
+    {
+        if (templates[i].name == RString("ModTemplate") && templates[i].bank)
+        {
+            found = true;
+        }
+    }
+    CHECK(found);
+
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+}
+
+// Mods are scanned first, so a same-named mod template wins and lists once.
+TEST_CASE("mission template catalog dedupes a mod template against a same-named base one", "[ui][missions][templates]")
+{
+    const auto uniqueId = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
+    const std::filesystem::path root = std::filesystem::temp_directory_path() / ("ofpr-template-dedup-" + uniqueId);
+    std::filesystem::create_directories(root / "Templates");
+    std::ofstream(root / "Templates" / "Shared.Eden.pbo").put('x'); // base
+    std::filesystem::create_directories(root / "@triTpl" / "Templates");
+    std::ofstream(root / "@triTpl" / "Templates" / "Shared.Eden.pbo").put('x'); // mod, same name
+
+    const std::filesystem::path originalPath = std::filesystem::current_path();
+    std::filesystem::current_path(root);
+    Poseidon::ModSystem::SetModPath((root / "@triTpl").string().c_str());
+
+    AutoArray<MissionTemplateEntry> templates;
+    ListMissionTemplates(templates, true, "Eden");
+
+    Poseidon::ModSystem::SetModPath("");
+    std::filesystem::current_path(originalPath);
+
+    int sharedCount = 0;
+    for (int i = 0; i < templates.Size(); ++i)
+    {
+        if (templates[i].name == RString("Shared"))
+        {
+            ++sharedCount;
+        }
+    }
+    CHECK(sharedCount == 1);
+
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
 }
 
 // The campaign-load screen lists missions by their briefingName, but it

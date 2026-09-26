@@ -7,7 +7,9 @@
         });
 
         if (!response.ok) {
-            throw new Error("Request failed");
+            const error = new Error(`Request failed with status ${response.status}`);
+            error.status = response.status;
+            throw error;
         }
 
         return response.json();
@@ -156,7 +158,7 @@
                         <td>${index + 1}</td>
                         <td>
                             ${escapeHtml(server.hostname)}
-                            <div class="server-subline">${escapeHtml(server.platform)} / ver ${escapeHtml(server.actver)}</div>
+                            <div class="server-subline">${escapeHtml(server.platform)} / ${escapeHtml(formatServerGameVersion(server))}</div>
                         </td>
                         <td>
                             ${escapeHtml(server.gametype)}
@@ -178,6 +180,12 @@
                 `;
             })
             .join("");
+    }
+
+    function formatServerGameVersion(server) {
+        const app = String(server.app || "").trim() || "unknown";
+        const tag = String(server.vertag || "").trim();
+        return `${app} ver ${server.actver}${tag ? ` ${tag}` : ""}`;
     }
 
     function renderDetailMods(mods) {
@@ -279,7 +287,100 @@
         return new URLSearchParams(window.location.search).get("hostname") || "";
     }
 
-    function updateBrowserUrl(filterValue, verificationValue) {
+    function currentModsTextFilter() {
+        return new URLSearchParams(window.location.search).get("q") || "";
+    }
+
+    function currentBrowserVersionFilter() {
+        const params = new URLSearchParams(window.location.search);
+        const app = params.get("app") || "";
+        const actver = params.get("actver") || "";
+        const vertag = params.get("vertag") || "";
+        return app && actver ? `${app}/${actver}/${vertag}` : "";
+    }
+
+    function currentBrowserGameFilter() {
+        return new URLSearchParams(window.location.search).get("app") || "";
+    }
+
+    function parseVersionKey(value) {
+        const [app, actver, ...tagParts] = String(value || "").split("/");
+        return {
+            app: app || "",
+            actver: actver || "",
+            vertag: tagParts.join("/") || "",
+        };
+    }
+
+    function versionKey(group) {
+        return `${group.app || ""}/${group.actver || ""}/${group.vertag || ""}`;
+    }
+
+    function versionLabel(group) {
+        const app = group.app || "unknown";
+        const tag = String(group.vertag || "").trim();
+        const version = `${app} ver ${group.actver || "?"}${tag ? ` ${tag}` : ""}`;
+        return `${version} (${group.servers})`;
+    }
+
+    function gameLabel(app, groups) {
+        const entries = groups
+            .filter((group) => (group.app || "") === app)
+            .reduce((total, group) => total + (Number(group.servers) || 0), 0);
+        return `${app || "unknown"} (${entries})`;
+    }
+
+    function modCompatibilityGroups(mods) {
+        const groups = new Map();
+        mods.forEach((mod) => {
+            const app = String(mod.app || "").trim();
+            const actver = Number(mod.actver) || 0;
+            if (!app || actver <= 0) {
+                return;
+            }
+            const vertag = String(mod.vertag || "").trim();
+            const key = `${app}/${actver}/${vertag}`;
+            const group = groups.get(key) || { app, actver, vertag, servers: 0 };
+            group.servers += 1;
+            groups.set(key, group);
+        });
+        return [...groups.values()].sort((a, b) =>
+            String(a.app).localeCompare(String(b.app)) ||
+            Number(a.actver) - Number(b.actver) ||
+            String(a.vertag || "").localeCompare(String(b.vertag || "")),
+        );
+    }
+
+    function populateGameSelect(element, groups) {
+        const apps = [...new Set(groups.map((group) => group.app || ""))].sort();
+        element.innerHTML =
+            '<option value="">all games</option>' +
+            apps.map((app) => `<option value="${escapeHtml(app)}">${escapeHtml(gameLabel(app, groups))}</option>`).join("");
+    }
+
+    function populateVersionSelect(element, groups, selectedGame) {
+        const visibleGroups = selectedGame ? groups.filter((group) => (group.app || "") === selectedGame) : groups;
+        element.innerHTML =
+            '<option value="">all game versions</option>' +
+            visibleGroups
+                .map((group) => `<option value="${escapeHtml(versionKey(group))}">${escapeHtml(versionLabel(group))}</option>`)
+                .join("");
+    }
+
+    function applyCompatibilityParams(params, gameValue, versionValue) {
+        const version = parseVersionKey(versionValue);
+        if (version.app && version.actver) {
+            params.set("app", version.app);
+            params.set("actver", version.actver);
+            params.set("vertag", version.vertag);
+            return;
+        }
+        if (gameValue) {
+            params.set("app", gameValue);
+        }
+    }
+
+    function browserUrlFor(filterValue, verificationValue, gameValue, versionValue) {
         const params = new URLSearchParams();
         const needle = filterValue.trim();
         if (needle) {
@@ -288,10 +389,30 @@
         if (verificationValue) {
             params.set("verification", verificationValue);
         }
+        applyCompatibilityParams(params, gameValue, versionValue);
 
         const next = params.toString();
-        const path = next ? `/browser?${next}` : "/browser";
-        window.history.replaceState({}, "", path);
+        return next ? `/browser?${next}` : "/browser";
+    }
+
+    function updateBrowserUrl(filterValue, verificationValue, gameValue, versionValue) {
+        window.history.replaceState({}, "", browserUrlFor(filterValue, verificationValue, gameValue, versionValue));
+    }
+
+    function modsUrlFor(filterValue, gameValue, versionValue) {
+        const params = new URLSearchParams();
+        const needle = filterValue.trim();
+        if (needle) {
+            params.set("q", needle);
+        }
+        applyCompatibilityParams(params, gameValue, versionValue);
+
+        const next = params.toString();
+        return next ? `/mods?${next}` : "/mods";
+    }
+
+    function updateModsUrl(filterValue, gameValue, versionValue) {
+        window.history.replaceState({}, "", modsUrlFor(filterValue, gameValue, versionValue));
     }
 
     function renderPlayerHistory(detail) {
@@ -349,18 +470,22 @@
             .join("");
     }
 
-    function renderVersionRows(modId, versions) {
-        if (!versions.length) {
-            return '<tr><td colspan="3">No related versions.</td></tr>';
+    function renderVersionRows(revisions) {
+        if (!revisions.length) {
+            return '<tr><td colspan="6">No package revisions.</td></tr>';
         }
 
-        return versions
+        const latestRevision = Math.max(...revisions.map((revision) => revision.packageRevision || 1));
+        return revisions
             .map(
-                (version) => `
+                (revision) => `
                     <tr>
-                        <td>${escapeHtml(version.version)}</td>
-                        <td>${version.modId === modId ? "current" : "related"}</td>
-                        <td>${renderModLinks(version)}</td>
+                        <td>${escapeHtml(revision.packageRevision || 1)}</td>
+                        <td>${escapeHtml(revision.version || "-")}</td>
+                        <td>${revision.publishedUnixMs ? escapeHtml(new Date(revision.publishedUnixMs).toLocaleDateString()) : "-"}</td>
+                        <td>${(revision.packageRevision || 1) === latestRevision ? "latest" : "historical"}</td>
+                        <td>${escapeHtml(formatBytes(revision.sizeBytes))}</td>
+                        <td>${revision.downloadUrl ? `<a href="${escapeHtml(revision.downloadUrl)}">download</a>` : "-"}</td>
                     </tr>
                 `,
             )
@@ -416,7 +541,7 @@
             sv.description ? escapeHtml(sv.description) : "",
             [sv.param1, sv.param2].filter(Boolean).map((p) => escapeHtml(p)).join(" · "),
             sv.requiredAddons ? `addons: ${escapeHtml(sv.requiredAddons)}` : "",
-            `${escapeHtml(sv.platform)} · ver ${escapeHtml(sv.actver)} (req ${escapeHtml(sv.reqver)})${sv.impl ? ` · ${escapeHtml(sv.impl)}` : ""}`,
+            `${escapeHtml(sv.platform)} / ${escapeHtml(formatServerGameVersion(sv))} (req ${escapeHtml(sv.reqver)})${sv.impl ? ` / ${escapeHtml(sv.impl)}` : ""}`,
             `${sv.password ? "password-protected" : "open"} · observed ${escapeHtml(relativeObservedTime(sv.lastObservedUnixMs))}`,
         ];
         facts.innerHTML = factLines.filter(Boolean).map((line) => `<div>${line}</div>`).join("");
@@ -441,7 +566,9 @@
         title.textContent = detail.mod.name;
         const size = formatBytes(detail.mod.sizeBytes);
         summary.textContent =
-            size === "-" ? `version ${detail.mod.version}` : `version ${detail.mod.version} · ${size}`;
+            size === "-"
+                ? `revision ${detail.mod.packageRevision || 1} / mod version ${detail.mod.version}`
+                : `revision ${detail.mod.packageRevision || 1} / mod version ${detail.mod.version} / ${size}`;
         const factParts = [detail.modId];
         if (detail.mod.folderName) {
             factParts.push(detail.mod.folderName);
@@ -452,7 +579,7 @@
         facts.textContent = factParts.join(" · ");
         description.innerHTML = escapeHtml(detail.mod.description || "-");
         links.innerHTML = renderModLinks(detail.mod);
-        versions.innerHTML = renderVersionRows(detail.modId, detail.versions || []);
+        versions.innerHTML = renderVersionRows(detail.versions || []);
         servers.innerHTML = renderModServers(detail.servers);
     }
 
@@ -465,21 +592,28 @@
         const selfReportedCountElement = document.getElementById("landing-self-reported-count");
         const unreachableCountElement = document.getElementById("landing-unreachable-count");
         const rowsElement = document.getElementById("landing-rows");
-        if (!serviceElement || !publicCountElement || !publicStatusElement || !playerCountElement || !modCountElement ||
-            !selfReportedCountElement || !unreachableCountElement || !rowsElement) {
+        const gameElement = document.getElementById("landing-game");
+        const versionElement = document.getElementById("landing-version");
+        const statusElement = document.getElementById("landing-browser-status");
+        const browserLinkElement = document.getElementById("landing-browser-link");
+        if (!publicCountElement || !publicStatusElement || !playerCountElement || !modCountElement ||
+            !selfReportedCountElement || !unreachableCountElement || !rowsElement || !gameElement || !versionElement ||
+            !statusElement || !browserLinkElement) {
             return;
         }
 
         try {
-            const [meta, summary, servers, mods] = await Promise.all([
+            const [meta, summary, mods, versions] = await Promise.all([
                 fetchJson("/v1/meta/service"),
                 fetchJson("/v1/meta/summary"),
-                fetchJson("/v1/servers?limit=5&includeFullServers=true"),
                 fetchJson("/v1/mods"),
+                fetchJson("/v1/servers/versions?includeFullServers=true&includePasswordedServers=true&includeUnverifiedServers=true"),
             ]);
             const modsById = new Map(mods.map((mod) => [mod.modId, mod]));
 
-            serviceElement.textContent = `${meta.productName} / ${meta.serviceName} / ${meta.apiVersion}`;
+            if (serviceElement) {
+                serviceElement.textContent = `${meta.productName} / ${meta.serviceName} / ${meta.apiVersion}`;
+            }
             publicCountElement.textContent = String(summary.publicVerifiedServers);
             publicStatusElement.textContent =
                 "Public browser shows only observer-verified rows by default";
@@ -487,18 +621,66 @@
             modCountElement.textContent = String(summary.modCount);
             selfReportedCountElement.textContent = String(summary.selfReportedServers);
             unreachableCountElement.textContent = String(summary.unreachableServers);
-            rowsElement.innerHTML = renderBrowserRows(servers, modsById);
-            rowsElement.querySelectorAll("[data-server-id]").forEach((row) => {
-                row.addEventListener("click", (event) => {
-                    if (event.target.closest("a,button")) {
-                        return;
-                    }
-                    const serverId = row.getAttribute("data-server-id");
-                    if (serverId) {
-                        window.location.href = `/browser/${encodeURIComponent(serverId)}`;
-                    }
+
+            populateGameSelect(gameElement, versions);
+            gameElement.value = currentBrowserGameFilter();
+            populateVersionSelect(versionElement, versions, gameElement.value);
+            versionElement.value = currentBrowserVersionFilter();
+
+            const render = async () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app && gameElement.value && selectedVersion.app !== gameElement.value) {
+                    versionElement.value = "";
+                }
+
+                const params = new URLSearchParams();
+                params.set("limit", "5");
+                params.set("includeFullServers", "true");
+                applyCompatibilityParams(params, gameElement.value, versionElement.value);
+                browserLinkElement.href = browserUrlFor("", "", gameElement.value, versionElement.value);
+                const servers = await fetchJson(`/v1/servers?${params.toString()}`);
+                rowsElement.innerHTML = renderBrowserRows(servers, modsById);
+                statusElement.textContent =
+                    versionElement.value ? `${servers.length} compatible servers` :
+                    gameElement.value ? `${servers.length} ${gameElement.value} servers` :
+                    `${servers.length} verified servers`;
+                rowsElement.querySelectorAll("[data-server-id]").forEach((row) => {
+                    row.addEventListener("click", (event) => {
+                        if (event.target.closest("a,button")) {
+                            return;
+                        }
+                        const serverId = row.getAttribute("data-server-id");
+                        if (serverId) {
+                            window.location.href = `/browser/${encodeURIComponent(serverId)}`;
+                        }
+                    });
+                });
+            };
+
+            gameElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app && selectedVersion.app !== gameElement.value) {
+                    versionElement.value = "";
+                }
+                populateVersionSelect(versionElement, versions, gameElement.value);
+                render().catch(() => {
+                    rowsElement.innerHTML = '<tr><td colspan="6">Failed to load public server list.</td></tr>';
+                    statusElement.textContent = "Unavailable";
                 });
             });
+            versionElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app) {
+                    gameElement.value = selectedVersion.app;
+                    populateVersionSelect(versionElement, versions, gameElement.value);
+                    versionElement.value = versionKey(selectedVersion);
+                }
+                render().catch(() => {
+                    rowsElement.innerHTML = '<tr><td colspan="6">Failed to load public server list.</td></tr>';
+                    statusElement.textContent = "Unavailable";
+                });
+            });
+            await render();
         } catch {
             serviceElement.textContent = "Service summary unavailable";
             publicStatusElement.textContent = "Unavailable";
@@ -510,16 +692,26 @@
         const rowsElement = document.getElementById("browser-rows");
         const filterElement = document.getElementById("browser-filter");
         const verificationElement = document.getElementById("browser-verification");
+        const gameElement = document.getElementById("browser-game");
+        const versionElement = document.getElementById("browser-version");
         const statusElement = document.getElementById("browser-status");
-        if (!rowsElement || !filterElement || !verificationElement || !statusElement) {
+        if (!rowsElement || !filterElement || !verificationElement || !gameElement || !versionElement || !statusElement) {
             return;
         }
 
         try {
-            const mods = await fetchJson("/v1/mods");
+            const [mods, versions] = await Promise.all([
+                fetchJson("/v1/mods"),
+                fetchJson("/v1/servers/versions?includeFullServers=true&includePasswordedServers=true&includeUnverifiedServers=true"),
+            ]);
             const modsById = new Map(mods.map((mod) => [mod.modId, mod]));
             filterElement.value = currentBrowserHostnameFilter();
             verificationElement.value = currentBrowserVerificationFilter();
+            gameElement.value = currentBrowserGameFilter();
+            populateGameSelect(gameElement, versions);
+            gameElement.value = currentBrowserGameFilter();
+            populateVersionSelect(versionElement, versions, gameElement.value);
+            versionElement.value = currentBrowserVersionFilter();
 
             const render = async () => {
                 const params = new URLSearchParams();
@@ -534,11 +726,14 @@
                 } else if (verification) {
                     params.set("verificationState", verification);
                 }
-                updateBrowserUrl(needle, verification);
+                applyCompatibilityParams(params, gameElement.value, versionElement.value);
+                updateBrowserUrl(needle, verification, gameElement.value, versionElement.value);
 
                 const servers = await fetchJson(`/v1/servers?${params.toString()}`);
                 rowsElement.innerHTML = renderBrowserRows(servers, modsById);
                 statusElement.textContent =
+                    versionElement.value ? `${servers.length} compatible servers` :
+                    gameElement.value ? `${servers.length} ${gameElement.value} servers` :
                     verification === "" ? `${servers.length} verified servers` : `${servers.length} shown`;
                 rowsElement.querySelectorAll("[data-server-id]").forEach((row) => {
                     row.addEventListener("click", (event) => {
@@ -562,6 +757,23 @@
 
             filterElement.addEventListener("input", rerender);
             verificationElement.addEventListener("change", rerender);
+            gameElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app && selectedVersion.app !== gameElement.value) {
+                    versionElement.value = "";
+                }
+                populateVersionSelect(versionElement, versions, gameElement.value);
+                rerender();
+            });
+            versionElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app) {
+                    gameElement.value = selectedVersion.app;
+                    populateVersionSelect(versionElement, versions, gameElement.value);
+                    versionElement.value = versionKey(selectedVersion);
+                }
+                rerender();
+            });
             await render();
         } catch {
             rowsElement.innerHTML = '<tr><td colspan="6">Failed to load server list.</td></tr>';
@@ -575,37 +787,24 @@
             return;
         }
 
+        let detail;
         try {
-            const detail = await fetchJson(`/v1/servers/${encodeURIComponent(serverId)}`);
-            fillServerDetail(detail);
-        } catch {
+            detail = await fetchJson(`/v1/servers/${encodeURIComponent(serverId)}`);
+        } catch (error) {
             const title = document.getElementById("detail-title");
-            const summary = document.getElementById("detail-summary");
-            const facts = document.getElementById("detail-facts");
-            const players = document.getElementById("detail-players");
-            const mods = document.getElementById("detail-mods");
-            const history = document.getElementById("detail-history");
-            const sessions = document.getElementById("detail-sessions");
             if (title) {
-                title.textContent = "Server detail unavailable";
+                title.textContent = error.status === 404 ? "Server not found" : "Server unavailable";
             }
-            if (summary) {
-                summary.textContent = "Unavailable";
-            }
-            if (facts) {
-                facts.textContent = "Could not load server detail.";
-            }
-            if (players) {
-                players.innerHTML = '<div class="detail-item">Unavailable</div>';
-            }
-            if (mods) {
-                mods.innerHTML = '<tr><td colspan="3">Unavailable</td></tr>';
-            }
-            if (history) {
-                history.innerHTML = "Unavailable";
-            }
-            if (sessions) {
-                sessions.innerHTML = '<tr><td colspan="4">Unavailable</td></tr>';
+            return;
+        }
+
+        try {
+            fillServerDetail(detail);
+        } catch (error) {
+            console.error("Server detail rendering failed", error);
+            const title = document.getElementById("detail-title");
+            if (title) {
+                title.textContent = "Server details could not be displayed";
             }
         }
     }
@@ -613,28 +812,42 @@
     async function loadModsList() {
         const rowsElement = document.getElementById("mods-rows");
         const filterElement = document.getElementById("mods-filter");
+        const gameElement = document.getElementById("mods-game");
+        const versionElement = document.getElementById("mods-version");
         const statusElement = document.getElementById("mods-status");
-        if (!rowsElement || !filterElement || !statusElement) {
+        if (!rowsElement || !filterElement || !gameElement || !versionElement || !statusElement) {
             return;
         }
 
         try {
-            const mods = await fetchJson("/v1/mods");
-            const render = () => {
-                const needle = filterElement.value.trim().toLowerCase();
-                const filtered = mods
-                    .filter(
-                        (mod) =>
-                            mod.name.toLowerCase().includes(needle) ||
-                            mod.modId.toLowerCase().includes(needle) ||
-                            (mod.folderName || "").toLowerCase().includes(needle),
-                    )
-                    // Locale-aware, diacritic-insensitive A→Z by name (so "ČSLA" sorts under C).
-                    .sort((a, b) =>
-                        a.name.localeCompare(b.name, undefined, { sensitivity: "base", numeric: true }),
-                    );
-                rowsElement.innerHTML = renderModsRows(filtered);
-                statusElement.textContent = `${filtered.length} shown / ${mods.length} total`;
+            const catalog = await fetchJson("/v1/mods");
+            const versions = modCompatibilityGroups(catalog);
+            const selected = new Set();
+            filterElement.value = currentModsTextFilter();
+            gameElement.value = currentBrowserGameFilter();
+            populateGameSelect(gameElement, versions);
+            gameElement.value = currentBrowserGameFilter();
+            populateVersionSelect(versionElement, versions, gameElement.value);
+            versionElement.value = currentBrowserVersionFilter();
+
+            const render = async () => {
+                const params = new URLSearchParams();
+                const needle = filterElement.value.trim();
+                if (needle) {
+                    params.set("q", needle);
+                }
+                applyCompatibilityParams(params, gameElement.value, versionElement.value);
+                updateModsUrl(needle, gameElement.value, versionElement.value);
+
+                const query = params.toString();
+                const mods = await fetchJson(query ? `/v1/mods?${query}` : "/v1/mods");
+                mods.sort((a, b) => a.name.localeCompare(b.name));
+                rowsElement.innerHTML = renderModsRows(mods);
+                statusElement.textContent = selected.size
+                    ? `${mods.length} shown / ${selected.size} selected`
+                    : versionElement.value ? `${mods.length} compatible mods`
+                    : gameElement.value ? `${mods.length} ${gameElement.value} mods`
+                    : `${mods.length} shown`;
                 rowsElement.querySelectorAll("[data-mod-id]").forEach((row) => {
                     row.addEventListener("click", (event) => {
                         if (event.target.closest("a,button")) {
@@ -647,17 +860,59 @@
                     });
                 });
                 rowsElement.querySelectorAll("[data-add-mod-id]").forEach((button) => {
-                    button.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
+                    const modId = button.getAttribute("data-add-mod-id");
+                    if (modId && selected.has(modId)) {
+                        button.textContent = "ADDED";
+                    }
+                    button.addEventListener("click", () => {
+                        const modId = button.getAttribute("data-add-mod-id");
+                        if (!modId) {
+                            return;
+                        }
+                        if (selected.has(modId)) {
+                            selected.delete(modId);
+                            button.textContent = "ADD";
+                        } else {
+                            selected.add(modId);
+                            button.textContent = "ADDED";
+                        }
+                        statusElement.textContent = selected.size
+                            ? `${mods.length} shown / ${selected.size} selected`
+                            : versionElement.value ? `${mods.length} compatible mods`
+                            : gameElement.value ? `${mods.length} ${gameElement.value} mods`
+                            : `${mods.length} shown`;
                     });
                 });
             };
 
-            filterElement.addEventListener("input", render);
-            render();
+            const rerender = () => {
+                render().catch(() => {
+                    rowsElement.innerHTML = '<tr><td colspan="5">Failed to load mod catalog.</td></tr>';
+                    statusElement.textContent = "Unavailable";
+                });
+            };
+
+            filterElement.addEventListener("input", rerender);
+            gameElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app && selectedVersion.app !== gameElement.value) {
+                    versionElement.value = "";
+                }
+                populateVersionSelect(versionElement, versions, gameElement.value);
+                rerender();
+            });
+            versionElement.addEventListener("change", () => {
+                const selectedVersion = parseVersionKey(versionElement.value);
+                if (selectedVersion.app) {
+                    gameElement.value = selectedVersion.app;
+                    populateVersionSelect(versionElement, versions, gameElement.value);
+                    versionElement.value = versionKey(selectedVersion);
+                }
+                rerender();
+            });
+            await render();
         } catch {
-            rowsElement.innerHTML = '<tr><td colspan="5">Failed to load mods.</td></tr>';
+            rowsElement.innerHTML = '<tr><td colspan="5">Failed to load mod catalog.</td></tr>';
             statusElement.textContent = "Unavailable";
         }
     }
@@ -668,17 +923,10 @@
             return;
         }
 
-        const addButton = document.getElementById("mod-detail-add");
-        if (addButton) {
-            addButton.addEventListener("click", (event) => {
-                event.preventDefault();
-            });
-        }
-
         try {
             const [mod, versions, servers] = await Promise.all([
                 fetchJson(`/v1/mods/${encodeURIComponent(modId)}`),
-                fetchJson(`/v1/mods/${encodeURIComponent(modId)}/versions`),
+                fetchJson(`/v1/mods/${encodeURIComponent(modId)}/revisions`),
                 fetchJson(`/v1/mods/${encodeURIComponent(modId)}/servers`),
             ]);
             fillModDetail({
@@ -690,25 +938,13 @@
         } catch {
             const title = document.getElementById("mod-detail-title");
             const summary = document.getElementById("mod-detail-summary");
-            const facts = document.getElementById("mod-detail-facts");
-            const description = document.getElementById("mod-detail-description");
-            const links = document.getElementById("mod-detail-links");
             const versions = document.getElementById("mod-versions-rows");
             const servers = document.getElementById("mod-servers-rows");
             if (title) {
-                title.textContent = "Mod detail unavailable";
+                title.textContent = "Mod not found";
             }
             if (summary) {
                 summary.textContent = "Unavailable";
-            }
-            if (facts) {
-                facts.textContent = "Could not load mod detail.";
-            }
-            if (description) {
-                description.innerHTML = "Unavailable";
-            }
-            if (links) {
-                links.innerHTML = "Unavailable";
             }
             if (versions) {
                 versions.innerHTML = '<tr><td colspan="3">Unavailable</td></tr>';
@@ -718,7 +954,6 @@
             }
         }
     }
-
     // Single source of truth for the top navigation. Each page ships an empty
     // <nav class="top-menu"> placeholder; the active link is derived from data-page.
     function renderTopMenu() {

@@ -5,6 +5,8 @@
 #ifndef __ENGINE_GL33_HPP
 #define __ENGINE_GL33_HPP
 
+#include <Poseidon/Core/Types.hpp>
+
 using namespace Poseidon;
 class TextureGL33;
 class TextBankGL33;
@@ -18,7 +20,6 @@ class TextBankGL33;
 #include <vector>
 #include <Poseidon/Foundation/Containers/Array.hpp>
 #include <Poseidon/Foundation/Containers/StaticArray.hpp>
-#include <Poseidon/Core/Types.hpp>
 #include <Poseidon/Graphics/Core/Engine.hpp>
 #include <Poseidon/Graphics/Core/TLVertex.hpp>
 #include <Poseidon/Graphics/Rendering/RenderPassDescriptor.hpp>
@@ -441,6 +442,18 @@ class EngineGL33 : public Engine
     // restore its full viewport.
     void BindFrameRenderTarget();
 
+    // Composite the gamma curve onto the finished frame.
+    void ApplyGammaPass();
+    void DestroyGammaTarget();
+    unsigned int _gammaTex = 0;
+    unsigned int _gammaVao = 0;
+    unsigned int _gammaProgram = 0;
+    int _gammaInvGammaLoc = -1;
+    int _gammaTexW = 0;
+    int _gammaTexH = 0;
+    // Latches so an unusable target is not rebuilt every frame.
+    bool _gammaUnavailable = false;
+
     // GL shader programs.  GL33 always uses shaders — there is no
     // fixed-function path to gate against.
     unsigned int _shaderProgram[NVertexShaders][NPixelShaderSpecular][NPixelShaderModes][NPixelShaders];
@@ -606,6 +619,9 @@ class EngineGL33 : public Engine
     bool GetRequestedFullscreenMode(int& w, int& h, int& refresh) const override;
     bool SetSwapInterval(int interval) override;
     int GetSwapInterval() const override;
+    void StartTextInput() override;
+    void StopTextInput() override;
+    bool IsTextInputActive() const override;
 
     void DestroySurfaces();
 
@@ -628,7 +644,6 @@ class EngineGL33 : public Engine
     int FrameTime() const;
     int AFrameTime() const override { return FrameTime(); }
 
-    void DoSetGamma();
     void SetGamma(float gamma) override;
     float GetGamma() const override { return _gamma; }
 

@@ -4,6 +4,7 @@
 #include <Poseidon/Input/InputCode.hpp>
 #include <Poseidon/Input/InputContext.hpp>
 #include <Poseidon/Input/InputProfile.hpp>
+#include <Poseidon/Input/MouseTuning.hpp>
 #include <Poseidon/Input/UserAction.hpp>
 #include <SDL3/SDL_scancode.h>
 #include <array>
@@ -32,6 +33,11 @@ class InputSubsystem
     float GetAction(UserAction action, bool checkFocus = true) const;
     float GetAction(InputContext ctx, UserAction action, bool checkFocus = true) const;
     bool GetActionToDo(UserAction action, bool reset = true, bool checkFocus = true);
+
+    // Forward / fast-forward for a context with the Turbo modifier folded in (Turbo
+    // promotes MoveForward to fast). Vehicle pilots read these, not the raw actions.
+    float GetMoveForward(InputContext ctx) const;
+    float GetMoveFastForward(InputContext ctx) const;
 
     // Computed movement state (set by Update())
     float GetMoveForward() const { return moveForward_; }
@@ -169,6 +175,9 @@ class InputSubsystem
     void ToggleReverseMouse();
     void SetJoystickEnabled(bool v);
     void ToggleJoystickEnabled();
+    bool IsReverseJoystick() const;
+    void SetReverseJoystick(bool v);
+    void ToggleReverseJoystick();
     bool IsMouseButtonsReversed() const;
     void SetMouseButtonsReversed(bool v);
     void ToggleMouseButtonsReversed();
@@ -176,6 +185,10 @@ class InputSubsystem
     float GetMouseSensitivityY() const;
     void SetMouseSensitivityX(float v);
     void SetMouseSensitivityY(float v);
+
+    // Live mouse-feel tuning read by MouseState each frame; the dev Mouse tab edits it.
+    MouseTuning& GetMouseTuning();
+    const MouseTuning& GetMouseTuning() const;
 
     // Key binding access
     const AutoArray<int>& GetUserKeys(UserAction action) const;

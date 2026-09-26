@@ -3,10 +3,12 @@ using namespace Poseidon;
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/Core/Config/UserConfig.hpp>
 #include <Poseidon/Core/ModSystem.hpp>
+#include <Poseidon/Core/ModCollection.hpp>
 #include <Poseidon/Core/Version.hpp>
 #include <Poseidon/Foundation/Logging/Logging.hpp>
 #include <Poseidon/Core/Config/Config.hpp>
 #include <Poseidon/Network/NetworkImpl.hpp>
+#include <Poseidon/IO/Filesystem/DirTree.hpp>
 #include <Poseidon/Core/Global.hpp>
 #include <Poseidon/Core/Application.hpp>
 // #include "strIncl.hpp"
@@ -14,6 +16,8 @@ using namespace Poseidon;
 #include <Poseidon/Foundation/Platform/GamePaths.hpp>
 
 #include <Poseidon/Network/NetworkConfig.hpp>
+#include <Poseidon/Network/NetworkServerConfig.hpp>
+#include <Poseidon/Network/NetworkMissionTransfer.hpp>
 #include <Poseidon/Network/NetworkServerCommon.hpp>
 #include <Poseidon/Network/MasterServerPublisher.hpp>
 #include <Poseidon/Network/MasterServerServiceClient.hpp>
@@ -228,6 +232,12 @@ int GetServerBanCount()
     return srv ? srv->GetBanCount() : -1;
 }
 
+RString GetServerFirstBanId()
+{
+    NetworkServer* srv = GNetworkManager.GetServer();
+    return srv ? srv->GetFirstBanId() : RString();
+}
+
 bool GetServerLocked()
 {
     NetworkServer* srv = GNetworkManager.GetServer();
@@ -395,6 +405,10 @@ NetTranspServer* __cdecl InitServer(int port, RString password, const ParamEntry
             equalModRequired = *entry;
         }
 
+        // The dedicated server config (-config) takes precedence over the main cfg
+        // read in Init() for the custom-file cap, so admins can set it in server.cfg.
+        MaxCustomFileSize = Poseidon::NetworkMaxCustomFileSizeFromCfg(cfg, MaxCustomFileSize);
+
         // on dedicated server, use only server name as session name
     }
     else
@@ -436,6 +450,11 @@ bool NetworkServer::Init(int port, RString password)
     {
         _proxy = *entry;
     }
+
+    // Server-configurable cap on client custom files (radio sounds, faces); a larger
+    // transfer kicks the client. Applies to dedicated and self-hosted servers alike,
+    // mirroring the original OFP Flashpoint.cfg "MaxCustomFileSize" key. 0 blocks all.
+    MaxCustomFileSize = Poseidon::NetworkMaxCustomFileSizeFromCfg(cfg, MaxCustomFileSize);
 
     _server = InitServer(port, password, cfg);
     return _server != nullptr;
@@ -572,6 +591,13 @@ bool NetworkServer::FillMasterServerServiceRegistration(MasterServerServiceRegis
         return false;
     }
 
+    registration.modPackages.clear();
+    for (const Mod& mod : ActiveModsFromMountPath((const char*)ModSystem::GetModList()).All())
+    {
+        registration.modPackages.push_back(
+            {mod.catalogId.empty() ? mod.id : mod.catalogId, std::max<int64_t>(1, mod.packageRevision)});
+    }
+
     registration.stateElapsedSeconds = (int)((GlobalTickCount() - _stateEnteredTime) / 1000);
 
     // Estimated minutes left, only meaningful once playing.
@@ -627,12 +653,12 @@ bool NetworkServer::FillMasterServerServiceRegistration(MasterServerServiceRegis
     return true;
 }
 
-// Publishing is gated on a configured master-server host
-// (set via --master-server / network.master_server).
+// Publishing is opt-in for dedicated servers. The master-server URL may still be
+// configured for client browsing; it is not enough to publish a server.
 void NetworkServer::StartMasterServerReporting()
 {
     RString masterServerHost = GetNetworkMasterServer();
-    if (masterServerHost.GetLength() <= 0)
+    if (!IsDedicatedServer() || !GetNetworkPublicServer() || masterServerHost.GetLength() <= 0)
     {
         return;
     }
@@ -645,7 +671,7 @@ void NetworkServer::StartMasterServerReporting()
 
 void NetworkServer::StopMasterServerReporting()
 {
-    if (GetNetworkMasterServer().GetLength() <= 0)
+    if (!IsDedicatedServer() || !GetNetworkPublicServer() || GetNetworkMasterServer().GetLength() <= 0)
     {
         return;
     }
@@ -654,7 +680,7 @@ void NetworkServer::StopMasterServerReporting()
 
 void NetworkServer::UpdateMasterServerReporting()
 {
-    if (GetNetworkMasterServer().GetLength() <= 0)
+    if (!IsDedicatedServer() || !GetNetworkPublicServer() || GetNetworkMasterServer().GetLength() <= 0)
     {
         return;
     }
@@ -857,8 +883,8 @@ void OnServerUserMessage(int from, char* buffer, int bufferSize, void* context)
 {
     NetworkServer* server = (NetworkServer*)context;
 
-    // A datagram shorter than the trailing CRC would make bufferSize go negative
-    // and read the CRC int out of bounds; drop it (N-SEC-16).
+    // A datagram must be long enough to contain its trailing CRC int; otherwise the
+    // size below would go negative. Drop it.
     if (bufferSize < (int)sizeof(int))
     {
         return;
@@ -875,6 +901,12 @@ void OnServerUserMessage(int from, char* buffer, int bufferSize, void* context)
     {
         Fail("Bad CRC for incoming message");
     }
+}
+
+void OnServerRawMagicMessage(int from, int magic, const char* buffer, int bufferSize, void* context)
+{
+    NetworkServer* server = (NetworkServer*)context;
+    server->OnRawMagicMessage(from, magic, buffer, bufferSize);
 }
 
 void OnServerSendComplete(DWORD msgID, bool ok, void* context)
@@ -942,7 +974,46 @@ void NetworkServer::ReceiveUserMessages()
     if (_server)
     {
         _server->ProcessUserMessages(OnServerUserMessage, this);
+        _server->ProcessRawMagicMessages(OnServerRawMagicMessage, this);
     }
+}
+
+void NetworkServer::OnRawMagicMessage(int from, int magic, const char* buffer, int bufferSize)
+{
+    if (magic != Poseidon::NetworkMissionBulkRawMagic)
+    {
+        return;
+    }
+
+    Poseidon::NetworkMissionBulkRawPacket packet;
+    if (!Poseidon::DecodeNetworkMissionBulkRawPayload(buffer, bufferSize, packet) ||
+        packet.kind != Poseidon::NetworkMissionBulkRawKind::Request)
+    {
+        LOG_WARN(Network, "[NMTTransferMission] rejected malformed raw mission request from {} size={}", from,
+                 bufferSize);
+        return;
+    }
+
+    QIFStreamB f;
+    RString src = _missionBank;
+    f.AutoOpen(src);
+    const auto source = Poseidon::BuildNetworkMissionFileSendSource(src, _missionHeader.fileName, f.GetBuffer());
+    if (!source.data || source.totalSize != packet.totalSize)
+    {
+        LOG_WARN(Network, "[NMTTransferMission] rejected raw resend request from {} size={} actual={}", from,
+                 packet.totalSize, source.totalSize);
+        return;
+    }
+
+    const int sent = Poseidon::SendNetworkMissionRawFileSegmentRange<TransferMissionFileMessage>(
+        source.destinationPath, source.data, source.totalSize, packet.curSegment, packet.segmentCount,
+        [this, from](AutoArray<char>& payload)
+        {
+            _server->SendRawMagic(from, Poseidon::NetworkMissionBulkRawMagic, reinterpret_cast<BYTE*>(payload.Data()),
+                                  payload.Size());
+        });
+    LOG_DEBUG(Network, "[NMTTransferMission] raw resend from {} firstSegment={} count={} sent={}", from,
+              packet.curSegment, packet.segmentCount, sent);
 }
 
 void NetworkServer::RemoveSystemMessages()

@@ -30,10 +30,11 @@ void MouseState::DiscardBuffered()
 {
     btnCount_ = 0;
     bufDeltaX_ = bufDeltaY_ = bufWheel_ = 0;
+    smoothX_ = smoothY_ = 0;
 }
 
 bool MouseState::Update(CursorAccum& cursor, int gameFocusLost, bool lookAroundEnabled, UITime currentTime,
-                        const CursorClamp* clamp)
+                        const CursorClamp* clamp, float cursorAspectRatio, float aimAspectRatio)
 {
     // Reset per-frame edge state
     leftToDo = false;
@@ -84,11 +85,39 @@ bool MouseState::Update(CursorAccum& cursor, int gameFocusLost, bool lookAroundE
     }
     btnCount_ = 0;
 
-    // Apply mouse movement (float precision — no int truncation)
     rawDeltaX = bufDeltaX_;
     rawDeltaY = bufDeltaY_;
-    deltaX = bufDeltaX_ * sensitivityX * kSensitivityScale;
-    deltaY = bufDeltaY_ * sensitivityY * kSensitivityScale;
+
+    // Tuning pipeline, each stage a no-op at default tuning: smoothing → DPI → accel → sens·baseScale.
+    float inX = bufDeltaX_;
+    float inY = bufDeltaY_;
+
+    if (tuning.smoothing > 0.0f)
+    {
+        const float alpha = 1.0f - tuning.smoothing;
+        smoothX_ += (inX - smoothX_) * alpha;
+        smoothY_ += (inY - smoothY_) * alpha;
+        inX = smoothX_;
+        inY = smoothY_;
+    }
+    else
+    {
+        smoothX_ = inX; // keep state coherent if smoothing is enabled later
+        smoothY_ = inY;
+    }
+
+    const float dpi = tuning.DpiFactor();
+
+    if (tuning.acceleration && tuning.accelExponent > 1.0f)
+    {
+        const float speed = std::sqrt(inX * inX + inY * inY);
+        const float mult = std::pow(1.0f + speed, tuning.accelExponent - 1.0f);
+        inX *= mult;
+        inY *= mult;
+    }
+
+    deltaX = inX * sensitivityX * tuning.baseScale * dpi;
+    deltaY = inY * sensitivityY * tuning.baseScale * dpi;
     deltaZ = bufWheel_;
     bufDeltaX_ = bufDeltaY_ = bufWheel_ = 0;
 
@@ -100,23 +129,31 @@ bool MouseState::Update(CursorAccum& cursor, int gameFocusLost, bool lookAroundE
     rightToDo = buttonsToDo[1];
     middleToDo = buttonsToDo[2];
 
-    // Cursor movement (matches Windows logic)
-    float moveX = deltaX * kCursorScaleX;
+    // Scale horizontal movement by aspect ratio so it feels consistent with
+    // vertical. Aim and the cursor use different aspect ratios because they
+    // measure width differently: aiming spans the full window, but the cursor's
+    // coordinates are relative to the HUD region (even though it can move past
+    // it), so it must use the HUD region's aspect ratio to stay uniform on both axes.
+    float aimMoveX = deltaX * (kCursorScaleY / aimAspectRatio);
+    float cursorMoveX = deltaX * (kCursorScaleY / cursorAspectRatio);
     float moveY = deltaY * kCursorScaleY;
 
-    saturate(moveX, -kCursorLimitX, +kCursorLimitX);
+    saturate(aimMoveX, -kCursorLimitX, +kCursorLimitX);
+    saturate(cursorMoveX, -kCursorLimitX, +kCursorLimitX);
     saturate(moveY, -kCursorLimitY, +kCursorLimitY);
 
     if (gameFocusLost <= 0)
     {
-        cursor.aimDeltaX += moveX;
+        cursor.aimDeltaX += aimMoveX;
         if (reverseY)
             cursor.aimDeltaY -= moveY;
         else
             cursor.aimDeltaY += moveY;
     }
-    cursor.cursorX += moveX;
-    cursor.cursorY += moveY;
+    // The menu cursor can be scaled independently of look (menuCursorScale 1.0
+    // == classic: cursor and aim move together).
+    cursor.cursorX += cursorMoveX * tuning.menuCursorScale;
+    cursor.cursorY += moveY * tuning.menuCursorScale;
 
     cursor.aimDeltaZ += kWheelToCursorScale * deltaZ;
 

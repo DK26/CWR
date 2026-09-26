@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -17,6 +18,7 @@ namespace Poseidon
 
 struct MasterServerServiceSession
 {
+    std::string app;
     std::string address;
     int hostPort = 0;
     std::string hostName;
@@ -33,11 +35,13 @@ struct MasterServerServiceSession
     int timeLeft = 15;
     int stateElapsedSeconds = 0;
     std::string mod;
+    std::vector<MasterServerServiceModPackage> modPackages;
     bool equalModRequired = false;
 };
 
 struct MasterServerServiceRegistration
 {
+    std::string app;
     std::string serverId;
     std::string address;
     int hostPort = 0;
@@ -54,6 +58,7 @@ struct MasterServerServiceRegistration
     int timeLeft = 0;
     int stateElapsedSeconds = 0;
     std::string mod;
+    std::vector<MasterServerServiceModPackage> modPackages;
     bool equalModRequired = false;
     std::string platform;
     std::string island;
@@ -93,8 +98,15 @@ struct MasterServerServiceModReference
 struct MasterServerServiceModCatalogEntry
 {
     std::string modId;
+    std::string app;
+    int actualVersion = 0;
+    std::string versionTag;
+    bool compatible = false;
     std::string name;
     std::string version;
+    int64_t packageRevision = 1;
+    std::string sha256;
+    int64_t publishedUnixMs = 0;
     std::string folderName;
     std::string description;
     std::vector<std::string> authors;
@@ -154,6 +166,7 @@ struct MasterServerServiceHttpRequest
     const char* contentType = nullptr;
     std::string body;
     std::string authToken; // sent as "Authorization: Bearer <token>" when non-empty
+    std::string userAgent;
 };
 
 inline bool TryParseMasterServerAuthority(const std::string& authority, std::string& host, int& port)
@@ -233,6 +246,16 @@ inline void AppendMasterServerServiceQueryParameter(std::string& url, bool& hasQ
         return;
     }
 
+    url.push_back(hasQuery ? '&' : '?');
+    hasQuery = true;
+    url += key;
+    url.push_back('=');
+    url += value;
+}
+
+inline void AppendMasterServerServiceQueryParameterEvenWhenEmpty(std::string& url, bool& hasQuery, const char* key,
+                                                                 const std::string& value)
+{
     url.push_back(hasQuery ? '&' : '?');
     hasQuery = true;
     url += key;
@@ -400,6 +423,7 @@ std::string GetMasterServerServiceJsonString(const cJSON* object, const char* ke
 int GetMasterServerServiceJsonInt(const cJSON* object, const char* key, int fallback);
 int64_t GetMasterServerServiceJsonInt64(const cJSON* object, const char* key, int64_t fallback);
 bool GetMasterServerServiceJsonBool(const cJSON* object, const char* key, bool fallback);
+std::string BuildMasterServerServiceUserAgent(const char* role);
 
 template <class FetchFn>
 bool RefreshMasterServerServiceBrowser(const char* masterServerHost, const MasterServerBrowserFilter& filter,
@@ -435,6 +459,7 @@ std::string BuildMasterServerServiceRegisterUrl(const char* masterServerHost);
 std::string BuildMasterServerServiceHeartbeatUrl(const char* masterServerHost);
 std::string BuildMasterServerServiceUnregisterUrl(const char* masterServerHost, const char* serverId);
 std::string BuildMasterServerServiceRegistrationJson(const MasterServerServiceRegistration& registration);
+bool StoreMasterServerServiceTokenFile(const std::string& path, const std::string& token);
 bool TryParseMasterServerServiceSession(const cJSON* object, MasterServerServiceSession& session);
 bool TryParseMasterServerServiceModCatalogEntry(const cJSON* object, MasterServerServiceModCatalogEntry& entry);
 bool ParseMasterServerServiceModDetailResponse(const char* json, MasterServerServiceModCatalogEntry& detail);
@@ -448,6 +473,21 @@ inline const char* GetMasterServerServicePublishAction(bool heartbeat)
     return heartbeat ? "heartbeat" : "register";
 }
 
+inline std::string SanitizeMasterServerServiceError(const std::string& responseBody, size_t limit = 512)
+{
+    std::string result;
+    result.reserve(std::min(responseBody.size(), limit));
+    for (const unsigned char byte : responseBody)
+    {
+        if (result.size() == limit)
+        {
+            break;
+        }
+        result.push_back(byte < 0x20 || byte == 0x7f ? ' ' : static_cast<char>(byte));
+    }
+    return result;
+}
+
 inline bool BuildMasterServerServicePublishRequest(const char* masterServerHost,
                                                    const MasterServerServiceRegistration& registration, bool heartbeat,
                                                    MasterServerServiceHttpRequest& request)
@@ -458,6 +498,7 @@ inline bool BuildMasterServerServicePublishRequest(const char* masterServerHost,
     request.method = "POST";
     request.contentType = "application/json";
     request.body = BuildMasterServerServiceRegistrationJson(registration);
+    request.userAgent = BuildMasterServerServiceUserAgent(heartbeat ? "server-heartbeat" : "server");
     return !request.url.empty() && !request.body.empty();
 }
 
@@ -467,6 +508,7 @@ inline bool BuildMasterServerServiceUnregisterRequest(const char* masterServerHo
     request = {};
     request.url = BuildMasterServerServiceUnregisterUrl(masterServerHost, serverId);
     request.method = "DELETE";
+    request.userAgent = BuildMasterServerServiceUserAgent("server");
     return !request.url.empty();
 }
 
@@ -475,6 +517,7 @@ inline bool BuildMasterServerServiceGetRequest(const std::string& url, MasterSer
     request = {};
     request.url = url;
     request.method = "GET";
+    request.userAgent = BuildMasterServerServiceUserAgent("client");
     return !request.url.empty();
 }
 
@@ -488,7 +531,8 @@ bool ExecuteMasterServerServiceHttpRequest(const MasterServerServiceHttpRequest&
     }
 
     return std::forward<SendFn>(sendRequest)(request.url.c_str(), proxyServer, request.method, request.contentType,
-                                             request.body, request.authToken.c_str(), responseBody, statusCode);
+                                             request.body, request.authToken.c_str(), request.userAgent.c_str(),
+                                             responseBody, statusCode);
 }
 
 template <class ExecuteFn>

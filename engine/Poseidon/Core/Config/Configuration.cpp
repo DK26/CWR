@@ -40,7 +40,9 @@ RString GetUserParams();
 // Global-scope functions referenced via ::
 namespace Poseidon
 {
+using Poseidon::IsConfigOverriddenByMod;
 using Poseidon::IsMenuOverriddenByMod;
+using Poseidon::MergeBaseConfigExtra;
 using Poseidon::MergeBaseResourceExtra;
 using Poseidon::ParseConfig;
 using Poseidon::ParseRemaster;
@@ -301,11 +303,11 @@ bool ConfigurationSystem::InitializeGameConfiguration(const char* language)
     GLanguage = normalizedLanguage.c_str();
     LOG_INFO(Config, "  Language: {}", normalizedLanguage);
 
-    // Load stringtables from all mod directories.  Each successful load
-    // flips StringtableSystem's available flag so Localize(int) returns
-    // real strings; if no mod has a stringtable.csv the flag stays false
-    // and Localize(int) short-circuits to "" silently.
+    // Load the base stringtable first, then let mods overlay the keys they
+    // actually provide. Older total-conversion mods often ship a partial
+    // bin/stringtable.csv; loading only the mod table drops remaster UI keys.
     LOG_TRACE(Config, "  Loading stringtables from mod directories...");
+    ParseStringtable("", nullptr);
     ModSystem::EnumDirectories(ParseStringtable, nullptr);
 
     // Initialize modules (must be after stringtable, before config)
@@ -318,6 +320,11 @@ bool ConfigurationSystem::InitializeGameConfiguration(const char* language)
     LOG_TRACE(Config, "  Parsing config.cpp/config.bin from mod directories...");
     const bool configLoaded = ModSystem::EnumDirectories(ParseConfig, nullptr);
     ConfigSystem::Instance().MarkConfigLoaded(configLoaded);
+
+    // A config-replacing mod shadows the remaster's config-extra (CfgLanguages); restore it on top
+    // so the reads below see the full set, as in the resource-extra restore below.
+    if (IsConfigOverriddenByMod())
+        MergeBaseConfigExtra();
 
     // Per-game language set/metadata: a CfgLanguages class overrides the built-in defaults. Applied here so
     // it drives the options list, voice metadata, normalization, system-language detection and the codepage

@@ -11,6 +11,7 @@
 #include <Poseidon/Core/SaveVersion.hpp>
 #include <Poseidon/Foundation/Common/GamePaths.hpp>
 #include <Poseidon/Core/Global.hpp>
+#include <Poseidon/UI/OptionsUICommon.hpp>
 
 #include <fstream>
 #include <ctime>
@@ -663,7 +664,7 @@ TEST_CASE("Advanced product PBO exposes metadata and config payload", "[game][ga
     const QFProperty sourceProperties[] = {
         {"product", "Advanced Product"},
     };
-    const auto bankPath = CreateTempAddonBank("poseidon_advanced_product_ok", "UnitTestGeneratedAdvancedAddon",
+    const auto bankPath = CreateTempAddonBank("poseidon_advanced_product_metadata", "UnitTestGeneratedAdvancedAddon",
                                               sourceProperties, std::size(sourceProperties), false);
 
     const auto properties = ReadRawPboProperties(bankPath.string());
@@ -694,8 +695,9 @@ TEST_CASE("Advanced product PBO follows addon acceptance rules", "[game][gameSta
 
     SECTION("accepted without encryption requirement")
     {
-        const auto bankPath = CreateTempAddonBank("poseidon_advanced_product_ok", "UnitTestGeneratedAdvancedAddon", properties,
-                                                  std::size(properties), false);
+        const auto bankPath =
+            CreateTempAddonBank("poseidon_advanced_product_acceptance", "UnitTestGeneratedAdvancedAddon", properties,
+                                std::size(properties), false);
         Ref<AddonAcceptanceContext> context = new AddonAcceptanceContext{productList, false};
         QFBank bank;
         REQUIRE(bank.open(RString(bankPath.string().substr(0, bankPath.string().size() - 4).c_str()),
@@ -712,8 +714,9 @@ TEST_CASE("Advanced product PBO follows addon acceptance rules", "[game][gameSta
 
     SECTION("rejected when encryption metadata is required")
     {
-        const auto bankPath = CreateTempAddonBank("poseidon_advanced_product_needs_encryption", "UnitTestGeneratedAdvancedAddon",
-                                                  properties, std::size(properties), false);
+        const auto bankPath =
+            CreateTempAddonBank("poseidon_advanced_product_needs_encryption", "UnitTestGeneratedAdvancedAddon",
+                                properties, std::size(properties), false);
         Ref<AddonAcceptanceContext> context = new AddonAcceptanceContext{productList, true};
         QFBank bank;
         REQUIRE(bank.open(RString(bankPath.string().substr(0, bankPath.string().size() - 4).c_str()),
@@ -846,4 +849,14 @@ TEST_CASE("Addon metadata banks load through GFileBanks and QIFStreamB",
     }
 
     GUseFileBanks = origUseFileBanks;
+}
+
+TEST_CASE("GetCampaignSaveDirectory resolves a non-campaign mission to the Tmp save dir",
+          "[game][gameStateExt][savegame]")
+{
+    // An empty campaign (multiplayer or standalone mission) resolves to the
+    // created Tmp save directory.
+    const RString dir = GetCampaignSaveDirectory(RString(""));
+    CHECK(dir == GetTmpSaveDirectory());
+    CHECK(std::filesystem::exists(std::filesystem::path(static_cast<const char*>(dir))));
 }

@@ -9,11 +9,14 @@ using namespace Poseidon;
 #include <Poseidon/Core/Version.hpp>
 #include <Poseidon/Network/NetworkImpl.hpp>
 #include <Poseidon/Network/NetworkConfig.hpp>
+#include <Poseidon/Network/NetworkCustomAssets.hpp>
+#include <Poseidon/Network/NetworkFileTransfer.hpp>
 #include <Poseidon/Network/NetworkServerAuth.hpp>
 #include <Poseidon/Network/WireBounds.hpp>
 #include <Poseidon/Core/Global.hpp>
 // #include "strIncl.hpp"
 #include <Poseidon/UI/Locale/StringtableExt.hpp>
+#include <Poseidon/IO/Filesystem/Utf8Paths.hpp>
 
 #include <Poseidon/AI/ArcadeTemplate.hpp>
 #include <Poseidon/AI/AI.hpp>
@@ -43,7 +46,6 @@ using namespace Poseidon;
 
 #include <Poseidon/Game/UiActions.hpp>
 
-#include <Poseidon/Foundation/Algorithms/Crc.hpp>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_scancode.h>
@@ -77,6 +79,11 @@ using namespace Poseidon;
 #include <Poseidon/World/Scene/Camera/Camera.hpp>
 
 #include <Poseidon/Foundation/Strings/Mbcs.hpp>
+
+namespace Poseidon
+{
+RString GetUserDirectory();
+}
 
 using namespace Poseidon::Dev;
 using Poseidon::Foundation::MemAllocSA;
@@ -247,7 +254,8 @@ CheckSquadObject::~CheckSquadObject()
 static DWORD WINAPI DownloadToMemThread(void* context)
 {
     DownloadToMemContext* c = (DownloadToMemContext*)context;
-    c->result = DownloadFile(c->url, *c->size, c->proxy);
+    c->result = DownloadFile(c->url, *c->size, c->proxy, c->maxSize);
+    c->done.store(true, std::memory_order_release);
     c->event->Set();
     return 0;
 }
@@ -256,7 +264,8 @@ static DWORD WINAPI DownloadToMemThread(void* context)
 static DWORD WINAPI DownloadToFileThread(void* context)
 {
     DownloadToFileContext* c = (DownloadToFileContext*)context;
-    DownloadFile(c->url, c->file, c->proxy);
+    c->result = DownloadFile(c->url, c->file, c->proxy, c->maxSize);
+    c->done.store(true, std::memory_order_release);
     c->event->Set();
     return 0;
 }
@@ -271,7 +280,7 @@ static DWORD WINAPI DownloadToFileThread(void* context)
 static void DownloadToFileOverlapped(DownloadToFileContext* context)
 {
     DWORD threadId;
-    HANDLE handle = CreateThread(nullptr, 64 * 1024, DownloadToFileThread, context, 0, &threadId);
+    HANDLE handle = CreateThread(nullptr, 0, DownloadToFileThread, context, 0, &threadId);
     if (!handle)
     {
         // create thread failed - fallback to direct processing
@@ -288,7 +297,7 @@ static void DownloadToFileOverlapped(DownloadToFileContext* context)
 static void DownloadToMemOverlapped(DownloadToMemContext* context)
 {
     DWORD threadId;
-    HANDLE handle = CreateThread(nullptr, 64 * 1024, DownloadToMemThread, context, 0, &threadId);
+    HANDLE handle = CreateThread(nullptr, 0, DownloadToMemThread, context, 0, &threadId);
     if (!handle)
     {
         // create thread failed - fallback to direct processing
@@ -343,7 +352,9 @@ void CheckSquadObject::StartDownloadingXMLSource()
     _squadContext.size = &_squadXMLSize;
     _squadContext.event = &_stateDone;
     _squadContext.proxy = _proxy.GetLength() > 0 ? (const char*)_proxy : nullptr;
+    _squadContext.maxSize = Poseidon::NetworkSquadFileMaxSize;
     _squadContext.result.Free();
+    _squadContext.done.store(false, std::memory_order_release);
     DownloadToMemOverlapped(&_squadContext);
 }
 
@@ -368,6 +379,8 @@ void CheckSquadObject::StartDownloadingLogo()
         _logoContext.url = _logoUrl;
         _logoContext.event = &_stateDone;
         _logoContext.proxy = _proxy.GetLength() > 0 ? (const char*)_proxy : nullptr;
+        _logoContext.maxSize = Poseidon::NetworkSquadFileMaxSize;
+        _logoContext.done.store(false, std::memory_order_release);
         DownloadToFileOverlapped(&_logoContext);
         // download result ignored?
     }
@@ -380,7 +393,12 @@ void CheckSquadObject::StartDownloadingLogo()
 
 bool CheckSquadObject::IsDone()
 {
+#ifdef _WIN32
     if (!_stateDone.TryWait())
+#else
+    if ((_state == DownloadingSquad && !_squadContext.done.load(std::memory_order_acquire)) ||
+        (_state == DownloadingLogo && !_logoContext.done.load(std::memory_order_acquire)))
+#endif
     {
         return false;
     }
@@ -420,6 +438,7 @@ bool CheckSquadObject::DoProcessXML()
 
     if (!_squadXMLData || _squadXMLSize <= 0)
     {
+        LOG_WARN(Network, "[squad] XML empty for '{}'", (const char*)_identity.squadId);
         return false;
     }
 
@@ -428,41 +447,41 @@ bool CheckSquadObject::DoProcessXML()
 
     if (!parser.Parse(in))
     {
+        LOG_WARN(Network, "[squad] XML parse failed for '{}'", (const char*)_identity.squadId);
         return false;
     }
     _squadXMLData.Free();
 
     if (!parser.Found())
     {
+        LOG_WARN(Network, "[squad] XML has no matching member for '{}' id={}", (const char*)_identity.name,
+                 (const char*)_identity.id);
         return false;
     }
 
     if (_newSquad && _squad->picture.GetLength() > 0)
     {
-        // download picture
-        RString src = GetServerTmpDir() + RString("/squads/") + _squad->nick + RString("/") + _squad->picture;
-        CreatePath(src);
-        char url[256];
-        snprintf(url, sizeof(url), "%s", (const char*)_squad->id);
-        char* ptr = strrchr(url, '/');
-        // FIX allow also \ in url
-        if (!ptr)
+        const RString relative = Poseidon::BuildNetworkSquadPictureRelativePath(_squad->nick, _squad->picture);
+        if (relative.GetLength() == 0)
         {
-            ptr = strrchr(url, '\\');
+            _squad->picture = RString();
+            return true;
         }
-        if (ptr)
-        {
-            ptr++;
-            *ptr = 0;
-        }
-        else
-        {
-            ptr = url;
-        }
-        strcpy(ptr, _squad->picture);
 
-        _logoUrl = url;
-        _logoFile = src;
+        _logoUrl = Poseidon::BuildNetworkSquadPictureDownloadUrl(_squad->id, _squad->picture);
+        if (_logoUrl.GetLength() == 0)
+        {
+            LOG_WARN(Network, "[squad] rejected logo URL for squad='{}' picture='{}'", (const char*)_squad->nick,
+                     (const char*)_squad->picture);
+            _squad->picture = RString();
+            return true;
+        }
+
+        _logoFile =
+            Poseidon::BuildNetworkServerSquadPictureUploadPath(GetServerTmpDir(), _squad->nick, _squad->picture);
+        const std::filesystem::path logoPath = Poseidon::FilesystemPathFromUtf8(_logoFile.Data());
+        const std::string logoDir = Poseidon::FilesystemPathToUtf8(logoPath.parent_path());
+        Poseidon::CreateDirectoryUtf8(logoDir.c_str());
     }
     else
     {
@@ -870,9 +889,14 @@ PlayerIdentity* NetworkComponent::FindIdentity(int dpnid)
 
 int NetworkComponent::ReceiveFileSegment(TransferFileMessage& msg)
 {
-    // The declared geometry is wire-controlled. Reject it before any allocation
-    // or write so a crafted header can neither drive a giant Resize (DoS) nor
-    // index/memcpy outside the buffers (OOB write — N-SEC-04).
+    if (Poseidon::IsSafeNetworkTransferredAssetPath(msg.path))
+    {
+        msg.path = Poseidon::GetUserDirectory() + msg.path;
+    }
+
+    // The declared geometry is wire-controlled. Reject it before any allocation or
+    // write so a malformed header can neither drive a giant Resize nor index/copy
+    // outside the buffers.
     static const int kMaxTransferBytes = 256 * 1024 * 1024;
     static const int kMaxTransferSegments = 1024 * 1024;
     if (!WireBounds::SegmentInBounds(msg.totSize, msg.totSegments, msg.curSegment, msg.offset, msg.data.Size()) ||
@@ -909,126 +933,159 @@ int NetworkComponent::ReceiveFileSegment(TransferFileMessage& msg)
     ReceivingFile& file = _files[index];
 
     // A resumed transfer must match the geometry the buffers were allocated for;
-    // a later packet declaring a larger file must not write past them (N-SEC-04).
+    // a later packet declaring a larger file must not write past them.
     if (msg.curSegment >= file.fileSegments.Size() ||
         !WireBounds::RangeInBounds(msg.offset, msg.data.Size(), file.fileData.Size()))
     {
         return -1;
     }
 
-    // receive segment
-    file.fileSegments[msg.curSegment] = true;
-    memcpy(file.fileData.Data() + msg.offset, msg.data.Data(), msg.data.Size());
-    file.received += msg.data.Size();
+    int remainingSegments = 0;
     for (int i = 0; i < file.fileSegments.Size(); i++)
     {
         if (!file.fileSegments[i])
         {
-            return 0;
+            ++remainingSegments;
         }
     }
-    //  whole file received
-    CreatePath(file.fileName);
-    QOFStream f;
-    f.open(file.fileName);
-    f.write(file.fileData.Data(), file.fileData.Size());
-    f.close();
-    // delete buffer
-    _files.Delete(index);
-    if (f.fail())
-        LOG_WARN(Network, "[ReceiveFileSegment] FAILED to write '{}' ({} bytes)", (const char*)msg.path, msg.totSize);
-    return f.fail() ? -1 : +1;
-}
 
-void NetworkComponent::TransferFile(int to, RString dest, RString source)
-{
-    const int maxSegmentSize = 512 - 50; // Sockets segment size
-
-    QIFStreamB f;
-    f.AutoOpen(source);
-
-    TransferFileMessage msg;
-    msg.path = dest;
-    msg.totSize = f.GetBuffer()->GetSize();
-    msg.totSegments = (msg.totSize + maxSegmentSize - 1) / maxSegmentSize;
-    msg.offset = 0;
-    for (int i = 0; i < msg.totSegments; i++)
+    const bool complete = Poseidon::ApplyReceivedNetworkFileTransferSegment(
+        file.fileSegments[msg.curSegment], msg.data.Size(), file.received, remainingSegments);
+    memcpy(file.fileData.Data() + msg.offset, msg.data.Data(), msg.data.Size());
+    if (!complete)
     {
-        msg.curSegment = i;
-        int size = std::min(maxSegmentSize, msg.totSize - msg.offset);
-        msg.data.Resize(size);
-        memcpy(msg.data.Data(), f.GetBuffer()->GetData() + msg.offset, size);
-        SendMsg(to, &msg, NMFGuaranteed);
+        return 0;
     }
+    //  whole file received
+    const bool written = Poseidon::WriteFileUtf8(file.fileName, file.fileData.Data(), file.fileData.Size());
+    _files.Delete(index);
+    if (!written)
+        LOG_WARN(Network, "[ReceiveFileSegment] FAILED to write '{}' ({} bytes)", (const char*)msg.path, msg.totSize);
+    return written ? +1 : -1;
 }
 
-void NetworkComponent::TransferFace(int to, RString player)
+bool NetworkComponent::HasReceivedFileSegment(const RString& path, int segment) const
+{
+    if (segment < 0)
+    {
+        return false;
+    }
+    for (int i = 0; i < _files.Size(); ++i)
+    {
+        const ReceivingFile& file = _files[i];
+        if (file.fileName == path && segment < file.fileSegments.Size())
+        {
+            return file.fileSegments[segment];
+        }
+    }
+    return false;
+}
+
+void NetworkComponent::TransferFile(int to, RString dest, RString source, NetMsgFlags flags)
+{
+    const std::vector<char> data = Poseidon::ReadFileUtf8(source);
+    if (data.empty() && Poseidon::FileExistsUtf8(source))
+    {
+        LOG_WARN(Network, "[TransferFile] refusing empty file '{}'", (const char*)source);
+        return;
+    }
+    if (data.empty())
+    {
+        LOG_WARN(Network, "[TransferFile] failed to read '{}'", (const char*)source);
+        return;
+    }
+
+    const DWORD start = GlobalTickCount();
+    const int segments = Poseidon::SendNetworkFileTransferSegments<TransferFileMessage>(
+        dest, data.data(), static_cast<int>(data.size()),
+        [this, to, flags](TransferFileMessage& msg) { SendMsg(to, &msg, flags); });
+    LOG_INFO(Network, "[NMTTransferFile] relay queued to {} src='{}' dst='{}' bytes={} segments={} enqueueMs={}", to,
+             (const char*)source, (const char*)dest, data.size(), segments, GlobalTickCount() - start);
+}
+
+void NetworkComponent::TransferFace(int to, int player)
 {
     // user only for transfer from server to clients
     NetworkClient* client = _parent->GetClient();
     bool notBotClient = !client || client->GetPlayer() != to;
 
-    RString srcDir = GetServerTmpDir() + RString("/players/") + player + RString("/");
-    RString dstDir = RString("tmp/players/") + player + RString("/");
+    RString srcDir = Poseidon::BuildNetworkServerPlayerUploadDir(GetServerTmpDir(), player);
+    RString relativeDstDir = Poseidon::BuildNetworkPlayerAssetTmpDir(player);
+    RString dstDir = Poseidon::GetUserDirectory() + relativeDstDir;
+    if (srcDir.GetLength() == 0 || relativeDstDir.GetLength() == 0)
+    {
+        return;
+    }
 
-    RString src = srcDir + RString("face.paa");
-    RString dst = dstDir + RString("face.paa");
+    RString src = Poseidon::BuildNetworkServerPlayerAssetUploadPath(GetServerTmpDir(), player, RString("face.paa"));
+    RString relativeDst = Poseidon::BuildNetworkPlayerAssetTmpPath(player, RString("face.paa"));
+    RString dst = Poseidon::GetUserDirectory() + relativeDst;
     if (QIFStream::FileExists(src))
     {
         if (notBotClient)
         {
-            TransferFile(to, dst, src);
+            TransferFile(to, relativeDst, src, NMFGuaranteed);
         }
         else
         {
-            CreatePath(dstDir);
-            ::CopyFile(src, dst, FALSE);
+            Poseidon::CreateDirectoryUtf8(dstDir);
+            Poseidon::CopyFileUtf8(src, dst, false);
         }
     }
     else
     {
-        src = srcDir + RString("face.jpg");
-        dst = dstDir + RString("face.jpg");
+        src = Poseidon::BuildNetworkServerPlayerAssetUploadPath(GetServerTmpDir(), player, RString("face.jpg"));
+        relativeDst = Poseidon::BuildNetworkPlayerAssetTmpPath(player, RString("face.jpg"));
+        dst = Poseidon::GetUserDirectory() + relativeDst;
         if (QIFStream::FileExists(src))
         {
             if (notBotClient)
             {
-                TransferFile(to, dst, src);
+                TransferFile(to, relativeDst, src, NMFGuaranteed);
             }
             else
             {
-                CreatePath(dstDir);
+                Poseidon::CreateDirectoryUtf8(dstDir);
+                Poseidon::CopyFileUtf8(src, dst, false);
             }
-            ::CopyFile(src, dst, FALSE);
         }
     }
 }
 
-void NetworkComponent::TransferCustomRadio(int to, RString player)
+void NetworkComponent::TransferCustomRadio(int to, int player)
 {
     // user only for transfer from server to clients
     NetworkClient* client = _parent->GetClient();
     bool notBotClient = !client || client->GetPlayer() != to;
 
-    RString srcDir = GetServerTmpDir() + RString("/players/") + player + RString("/sound/");
-    RString dstDir = RString("tmp/players/") + player + RString("/sound/");
-
-    std::error_code ec;
-    for (const auto& entry : std::filesystem::directory_iterator(std::string(srcDir), ec))
+    RString srcDir = Poseidon::BuildNetworkServerPlayerSoundUploadDir(GetServerTmpDir(), player);
+    RString relativeDstDir = Poseidon::BuildNetworkPlayerSoundTmpDir(player);
+    RString dstDir = Poseidon::GetUserDirectory() + relativeDstDir;
+    if (srcDir.GetLength() == 0 || relativeDstDir.GetLength() == 0)
     {
-        if (!entry.is_regular_file())
+        return;
+    }
+
+    for (const Poseidon::DirectoryEntryUtf8& entry : Poseidon::ListDirectoryEntriesUtf8(srcDir))
+    {
+        if (entry.isDirectory)
             continue;
-        RString filename = entry.path().filename().string().c_str();
-        RString src = srcDir + filename;
-        RString dst = dstDir + filename;
+        RString filename = entry.name.c_str();
+        RString src = Poseidon::BuildNetworkServerPlayerSoundUploadPath(GetServerTmpDir(), player, filename);
+        RString relativeDst = Poseidon::BuildNetworkPlayerSoundTmpPath(player, filename);
+        RString dst = Poseidon::GetUserDirectory() + relativeDst;
+        if (src.GetLength() == 0 || relativeDst.GetLength() == 0)
+        {
+            continue;
+        }
         if (notBotClient)
         {
-            TransferFile(to, dst, src);
+            TransferFile(to, relativeDst, src, NMFGuaranteed);
         }
         else
         {
-            CreatePath(dstDir);
-            ::CopyFile(src, dst, FALSE);
+            Poseidon::CreateDirectoryUtf8(dstDir);
+            Poseidon::CopyFileUtf8(src, dst, false);
         }
     }
 }
@@ -1147,6 +1204,17 @@ void NetworkManager::GetSessions(AutoArray<SessionInfo>& sessions)
         info.badMod = info.equalModRequired && stricmp(info.mod, ModSystem::GetModNames()) != 0;
         info.badTag = stricmp(info.versionTag, GetVersionTag()) != 0;
     }
+}
+
+bool NetworkManager::ProbeRemoteHosts(AutoArray<RemoteHostAddress>& hosts, int port)
+{
+    if (!_sessionEnum)
+    {
+        return false;
+    }
+
+    _lastEnumHosts = Glob.uiTime;
+    return _sessionEnum->StartEnumHosts(RString(), port, &hosts);
 }
 
 void CheckMPVersion(SessionInfo& info)
@@ -1694,6 +1762,19 @@ RString NetworkManager::GetPlayerName(int dpid)
     {
         return "Unknown player";
     }
+}
+
+void NetworkManager::GetVoiceSpeakers(AutoArray<NetVoiceSpeakerInfo, Poseidon::Foundation::MemAllocSA>& speakers)
+{
+    if (_client)
+    {
+        _client->GetVoiceSpeakers(speakers);
+    }
+}
+
+int NetworkManager::GetVoiceTransmitHealth()
+{
+    return _client ? _client->GetVoiceTransmitHealth() : 0;
 }
 
 Vector3 NetworkManager::GetCameraPosition(int dpid)

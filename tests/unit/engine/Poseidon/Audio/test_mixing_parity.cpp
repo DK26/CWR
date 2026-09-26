@@ -730,7 +730,9 @@ TEST_CASE("Parity: preview effect volume at various slider positions", "[Audio][
 #include <PoseidonOpenAL/SoundSystemOAL.hpp>
 #include <PoseidonOpenAL/WaveOAL.hpp>
 #include "test_fixtures.hpp"
+#include <chrono>
 #include <fstream>
+#include <thread>
 #include <vector>
 
 namespace
@@ -877,6 +879,48 @@ TEST_CASE("OAL: stopped wave can restart after reload", "[Audio][parity][preview
     delete sys;
 }
 
+TEST_CASE("OAL: streamed OGG can restart after reload", "[Audio][parity][oal][streaming]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SKIP("OpenAL not available");
+    }
+
+    const std::string ogg = GET_FIXTURE("audio/stream_loop.ogg");
+    auto* wave = dynamic_cast<WaveOAL*>(sys->CreateWave(ogg.c_str(), false, true));
+    if (!wave)
+    {
+        delete sys;
+        SKIP("Cannot create streamed OGG fixture wave");
+    }
+    REQUIRE(wave->IsStreamed());
+
+    const auto waitForPlayback = [&]
+    {
+        for (int i = 0; i < 80; ++i)
+        {
+            sys->Commit();
+            if (wave->State() == WaveState::Playing && wave->GetCurrentOffsetSeconds() > 0.02f)
+                return true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        return false;
+    };
+
+    for (int shot = 0; shot < 4; ++shot)
+    {
+        if (shot > 0)
+            wave->Restart();
+        wave->Play();
+        REQUIRE(waitForPlayback());
+    }
+    CHECK_FALSE(wave->IsTerminated());
+
+    wave->Release();
+    delete sys;
+}
+
 // End-to-end wiring: SetVolume's freq argument (the engine's pitch ratio,
 // e.g. a vehicle engine sound at rpm*1.2) must reach the real AL source as
 // AL_PITCH via the 1:1 DirectSound mapping — NOT floored at 0.5x.  Broken
@@ -953,5 +997,118 @@ TEST_CASE("OAL: deferred-play wave starts at the requested pitch (no startup cli
     CHECK(wave->AppliedPitchForTest() < 0.5f);
 
     wave->Release();
+    delete sys;
+}
+
+TEST_CASE("OAL - LastLoop keeps current loop offset instead of restarting", "[Audio][parity][oal][last-loop]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SKIP("OpenAL not available");
+    }
+
+    auto wavData = ReadFixtureFile("audio/tone.wav");
+    if (wavData.empty())
+    {
+        delete sys;
+        SKIP("Cannot read fixture audio/tone.wav");
+    }
+
+    auto* wave = dynamic_cast<WaveOAL*>(sys->CreateWaveFromMemory(wavData.data(), wavData.size(), ".wav", false));
+    if (!wave)
+    {
+        delete sys;
+        SKIP("Cannot create wave from memory");
+    }
+
+    wave->Repeat(2);
+    wave->Play();
+    sys->Commit();
+    REQUIRE(wave->State() == WaveState::Playing);
+
+    float before = 0.f;
+    for (int i = 0; i < 80 && (before < 0.025f || before > 0.090f); ++i)
+    {
+        sys->Commit();
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        before = wave->GetCurrentOffsetSeconds();
+    }
+    REQUIRE(before >= 0.025f);
+    REQUIRE(before < 0.090f);
+
+    wave->LastLoop();
+    sys->Commit();
+
+    const float after = wave->GetCurrentOffsetSeconds();
+    INFO("offset before LastLoop=" << before << " after=" << after);
+    CHECK(after > 0.020f);
+    CHECK(after + 0.015f >= before);
+
+    wave->Release();
+    sys->Commit();
+    delete sys;
+}
+
+TEST_CASE("OAL - streamed LastLoop finishes current OGG pass instead of restarting",
+          "[Audio][parity][oal][last-loop][streaming]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SKIP("OpenAL not available");
+    }
+
+    const std::string ogg = GET_FIXTURE("audio/stream_loop.ogg");
+    auto* wave = dynamic_cast<WaveOAL*>(sys->CreateWave(ogg.c_str(), false, true));
+    if (!wave)
+    {
+        delete sys;
+        SKIP("Cannot create streamed OGG fixture wave");
+    }
+    if (!wave->IsStreamed())
+    {
+        wave->Release();
+        delete sys;
+        SKIP("fixture OGG did not use streamed path");
+    }
+
+    wave->Repeat(2);
+    wave->Play();
+
+    bool started = false;
+    for (int i = 0; i < 80 && !started; ++i)
+    {
+        sys->Commit();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        started = wave->State() == WaveState::Playing && wave->GetCurrentOffsetSeconds() > 0.05f;
+    }
+    REQUIRE(started);
+
+    float before = 0.f;
+    for (int i = 0; i < 140 && before < 2.05f; ++i)
+    {
+        sys->Commit();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        before = wave->GetCurrentOffsetSeconds();
+    }
+    REQUIRE(before > 1.80f);
+
+    wave->LastLoop();
+
+    float after = before;
+    for (int i = 0; i < 12; ++i)
+    {
+        sys->Commit();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        after = wave->GetCurrentOffsetSeconds();
+    }
+
+    INFO("streamed offset before LastLoop=" << before << " after=" << after);
+    CHECK(after > 1.80f);
+    CHECK(after + 0.030f >= before);
+
+    wave->Release();
+    sys->Commit();
     delete sys;
 }

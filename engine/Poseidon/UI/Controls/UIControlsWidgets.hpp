@@ -80,6 +80,7 @@ public:
 	void OnLButtonDown(float x, float y) override;
 	void OnLButtonUp(float x, float y) override;
 	void OnMouseMove(float x, float y, bool active = true) override;
+	bool WantsTextInput() const override {return true;}
 
 protected:
 	bool IsMulti() const override;
@@ -200,6 +201,12 @@ public:
 
 	RString GetAction() {return _action;}
 	void SetAction(RString action) {_action = action;}
+	void SetColor(PackedColor color) {_color = color;}
+	PackedColor GetColor() const { return _color; }
+	void SetActiveColor(PackedColor color) {_colorActive = color;}
+	PackedColor GetActiveColor() const { return _colorActive; }
+	void SetFocusBgColor(PackedColor color) { _colorFocusBg = color; }
+	PackedColor GetFocusBgColor() const { return _colorFocusBg; }
 
 	bool IsActive() const {return _active;}
 
@@ -840,10 +847,15 @@ public:
 		}
 	}
 	void SetColor(PackedColor color) {_color = color;}
+	PackedColor GetColor() const { return _color; }
+	void SetBgColor(PackedColor color) {_bgColor = color;}
+	PackedColor GetBgColor() const { return _bgColor; }
 
 	void FormatText();
 	int GetLineCount() const { return _lines.Size(); } // wrapped/explicit-break line count (ST_MULTI)
 	RString GetLine(int i) const;
+	float MeasureTextWidth(RString text) const;
+	float MeasureTextFraction(RString text) const;
 
 	void OnDraw(float alpha) override;
 
@@ -868,6 +880,7 @@ public:
 	void OnLButtonDown(float x, float y) override;
 	void OnLButtonUp(float x, float y) override;
 	void OnMouseMove(float x, float y, bool active = true) override;
+	bool WantsTextInput() const override {return true;}
 
 protected:
 	bool IsMulti() const override;
@@ -926,6 +939,8 @@ public:
 
 	RString GetText() {return _text;}
 	void SetText(RString text);
+	float MeasureTextWidth(RString text) const;
+	float MeasureTextFraction(RString text) const;
 	void ReloadLocalizedText() override
 	{
 		if (const ParamEntry* saved = _textCls)
@@ -937,6 +952,12 @@ public:
 
 	RString GetAction() {return _action;}
 	void SetAction(RString action) {_action = action;}
+	void SetColor(PackedColor color) {_color = color;}
+	PackedColor GetColor() const { return _color; }
+	void SetActiveColor(PackedColor color) {_colorActive = color;}
+	PackedColor GetActiveColor() const { return _colorActive; }
+	void SetFocusBgColor(PackedColor color) { _colorFocusBg = color; }
+	PackedColor GetFocusBgColor() const { return _colorFocusBg; }
 
 	bool IsActive() const {return _active;}
 
@@ -1031,6 +1052,7 @@ public:
 	void SetScrollPos(float pos) { _scrollbar.SetPos(pos); }
 	float GetScrollPos() { return _scrollbar.GetPos(); }
 	void SetScrollSpeed(float line, float page) { _scrollbar.SetSpeed(line, page); }
+	void SetColor(PackedColor color) { _scrollbar.SetColor(color); }
 	bool IsScrollLocked() const { return _scrollbar.IsLocked(); }
 };
 
@@ -1110,8 +1132,10 @@ public:
 	);
 
 	void UpdateInfo(ControlObject *object, ControlInObject &info) override;
+	float MeasureTextWidth(RString text, float rowTextSize) const;
 
 	float NRows() const override {return _rows;}
+	float ContentWidthFraction() { return GetSize() > _rows ? 1.0f - _sb3DWidth : 1.0f; }
 
 	void SetColorPicture(bool set) {_colorPicture = set;}
 

@@ -336,6 +336,48 @@ TEST_CASE("InputSubsystem Update isolates vehicle movement from infantry binding
     sub.SetContext(savedContext);
 }
 
+TEST_CASE("InputSubsystem folds Turbo into vehicle fast-forward per context", "[input][integration]")
+{
+    auto& sub = InputSubsystem::Instance();
+    ProfileSnapshot carSnap(sub, InputContext::CarDriver);
+    float savedW = GInput.keyboard.keys[SDL_SCANCODE_W];
+    float savedE = GInput.keyboard.keys[SDL_SCANCODE_E];
+    float savedShift = GInput.keyboard.keys[SDL_SCANCODE_LSHIFT];
+
+    auto& car = sub.GetProfile(InputContext::CarDriver);
+    car.ClearBindings(UAMoveForward);
+    car.ClearBindings(UAMoveFastForward);
+    car.ClearBindings(UATurbo);
+    car.Bind(UAMoveForward, InputCode::Key(SDL_SCANCODE_W));
+    car.Bind(UAMoveFastForward, InputCode::Key(SDL_SCANCODE_E));
+    car.Bind(UATurbo, InputCode::Key(SDL_SCANCODE_LSHIFT));
+
+    const InputContext ctx = InputContext::CarDriver;
+
+    // Forward alone: normal throttle, nothing in fast-forward.
+    GInput.keyboard.keys[SDL_SCANCODE_W] = 1.0f;
+    GInput.keyboard.keys[SDL_SCANCODE_E] = 0.0f;
+    GInput.keyboard.keys[SDL_SCANCODE_LSHIFT] = 0.0f;
+    CHECK(sub.GetMoveForward(ctx) == 1.0f);
+    CHECK(sub.GetMoveFastForward(ctx) == 0.0f);
+
+    // Turbo + forward: bare forward drops to zero, its weight moves to fast-forward.
+    GInput.keyboard.keys[SDL_SCANCODE_LSHIFT] = 1.0f;
+    CHECK(sub.GetMoveForward(ctx) == 0.0f);
+    CHECK(sub.GetMoveFastForward(ctx) == 1.0f);
+
+    // The dedicated fast-forward key is full throttle on its own.
+    GInput.keyboard.keys[SDL_SCANCODE_W] = 0.0f;
+    GInput.keyboard.keys[SDL_SCANCODE_LSHIFT] = 0.0f;
+    GInput.keyboard.keys[SDL_SCANCODE_E] = 1.0f;
+    CHECK(sub.GetMoveForward(ctx) == 0.0f);
+    CHECK(sub.GetMoveFastForward(ctx) == 1.0f);
+
+    GInput.keyboard.keys[SDL_SCANCODE_W] = savedW;
+    GInput.keyboard.keys[SDL_SCANCODE_E] = savedE;
+    GInput.keyboard.keys[SDL_SCANCODE_LSHIFT] = savedShift;
+}
+
 TEST_CASE("InputSubsystem key queries on zeroed GInput", "[input][integration]")
 {
     auto& sub = InputSubsystem::Instance();
@@ -423,6 +465,50 @@ TEST_CASE("InputSubsystem lookAround defaults to off", "[input][integration]")
     REQUIRE_FALSE(sub.IsLookAroundToggled());
 }
 
+TEST_CASE("InputSubsystem clears pending look delta when held freelook is released", "[input][integration]")
+{
+    auto& sub = InputSubsystem::Instance();
+    ProfileSnapshot infantrySnap(sub, InputContext::Infantry);
+    InputContext savedContext = sub.GetContext();
+    float savedAlt = GInput.keyboard.keys[SDL_SCANCODE_LALT];
+    float savedAimX = GInput.cursor.aimDeltaX;
+    float savedAimY = GInput.cursor.aimDeltaY;
+    float savedAimZ = GInput.cursor.aimDeltaZ;
+
+    auto& infantry = sub.GetProfile(InputContext::Infantry);
+    infantry.ClearBindings(UALookAround);
+    infantry.Bind(UALookAround, InputCode::Key(SDL_SCANCODE_LALT));
+    sub.SetContext(InputContext::Infantry);
+    sub.ResetLookAroundToggle();
+
+    GInput.keyboard.keys[SDL_SCANCODE_LALT] = 0.0f;
+    sub.Update();
+    REQUIRE_FALSE(sub.IsLookAroundEnabled());
+
+    GInput.keyboard.keys[SDL_SCANCODE_LALT] = 1.0f;
+    sub.Update();
+    REQUIRE(sub.IsLookAroundEnabled());
+
+    GInput.cursor.aimDeltaX = 0.25f;
+    GInput.cursor.aimDeltaY = -0.125f;
+    GInput.cursor.aimDeltaZ = 0.5f;
+
+    GInput.keyboard.keys[SDL_SCANCODE_LALT] = 0.0f;
+    sub.Update();
+
+    REQUIRE_FALSE(sub.IsLookAroundEnabled());
+    REQUIRE(sub.FreelookChanged());
+    CHECK(sub.ConsumeCursorDeltaX() == 0.0f);
+    CHECK(sub.ConsumeCursorDeltaY() == 0.0f);
+    CHECK(sub.ConsumeCursorScroll() == 0.0f);
+
+    GInput.keyboard.keys[SDL_SCANCODE_LALT] = savedAlt;
+    GInput.cursor.aimDeltaX = savedAimX;
+    GInput.cursor.aimDeltaY = savedAimY;
+    GInput.cursor.aimDeltaZ = savedAimZ;
+    sub.SetContext(savedContext);
+}
+
 // --- Joystick/activity/focus/fire/cursor tests (Phase 2H API) ---
 
 TEST_CASE("InputSubsystem joystick axes return zero on zeroed GInput", "[input][integration]")
@@ -481,6 +567,12 @@ TEST_CASE("InputSubsystem config settings round-trip", "[input][integration]")
     REQUIRE(sub.IsJoystickEnabled() == !origJoy);
     sub.ToggleJoystickEnabled();
     REQUIRE(sub.IsJoystickEnabled() == origJoy);
+
+    bool origRevJoy = sub.IsReverseJoystick();
+    sub.SetReverseJoystick(!origRevJoy);
+    REQUIRE(sub.IsReverseJoystick() == !origRevJoy);
+    sub.ToggleReverseJoystick();
+    REQUIRE(sub.IsReverseJoystick() == origRevJoy);
 
     bool origButtons = sub.IsMouseButtonsReversed();
     sub.SetMouseButtonsReversed(!origButtons);

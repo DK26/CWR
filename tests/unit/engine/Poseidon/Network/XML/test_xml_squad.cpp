@@ -1,7 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
+#include <Poseidon/IO/Filesystem/Utf8Paths.hpp>
 #include <Poseidon/Network/XML/Xml.hpp>
 #include <Poseidon/IO/Streams/QBStream.hpp>
 #include "../../test_fixtures.hpp"
+#include <filesystem>
 #include <string.h>
 #include <Poseidon/Foundation/Strings/RString.hpp>
 

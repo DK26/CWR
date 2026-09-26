@@ -111,7 +111,7 @@ static void DispatchControllerUiDispatch(const ControllerUiDispatch& dispatch)
 static bool IsControllerPointerAction(ControllerUiAction action)
 {
     return action == ControllerUiAction::PrimaryDown || action == ControllerUiAction::PrimaryUp ||
-        action == ControllerUiAction::PrimaryClick;
+           action == ControllerUiAction::PrimaryClick;
 }
 
 void SDLInput_BufferUICharEvent(const char* text)
@@ -195,6 +195,10 @@ void ProcessKeyboard_SDL(DWORD /*sysTime*/, DWORD timeDelta)
     // (Event timestamps are in GlobalTickCount() space, not ::GetTickCount())
     DWORD sysTime = GlobalTickCount();
     GInput.keyboard.Update(sysTime, timeDelta, GWorld->IsUserInputEnabled());
+    if (GWorld)
+    {
+        GWorld->HandleVoiceChatShortcuts();
+    }
 }
 
 void SDLInput_BufferMouseButton(int btn, bool down)
@@ -240,8 +244,26 @@ void ProcessMouse_SDL(DWORD timeDelta)
         clampPtr = &clamp;
     }
 
-    bool markKeyboardTurn =
-        GInput.mouse.Update(GInput.cursor, GInput.gameFocusLost, GInput.lookAroundEnabled, Glob.uiTime, clampPtr);
+    // Aiming spans the full window, so it uses the window aspect ratio
+    // (Width/Height).  The cursor's coordinates are relative to the HUD region,
+    // so it uses that region's aspect ratio (Width2D/Height2D) — this keeps its
+    // speed consistent and unaffected by the HUD width limit.  Both fall back to
+    // the 4:3 reference when the engine size is unavailable.
+    float aimAspectRatio = MouseState::kBaseAspectRatio;
+    float cursorAspectRatio = MouseState::kBaseAspectRatio;
+    if (::Poseidon::GEngine)
+    {
+        const int winH = ::Poseidon::GEngine->Height();
+        if (winH > 0)
+            aimAspectRatio = static_cast<float>(::Poseidon::GEngine->Width()) / static_cast<float>(winH);
+
+        const int uiH = ::Poseidon::GEngine->Height2D();
+        if (uiH > 0)
+            cursorAspectRatio = static_cast<float>(::Poseidon::GEngine->Width2D()) / static_cast<float>(uiH);
+    }
+
+    bool markKeyboardTurn = GInput.mouse.Update(GInput.cursor, GInput.gameFocusLost, GInput.lookAroundEnabled,
+                                                Glob.uiTime, clampPtr, cursorAspectRatio, aimAspectRatio);
 
     if (markKeyboardTurn)
         GInput.keyboard.turnLastActive = Glob.uiTime;
@@ -392,7 +414,15 @@ static void BufferControllerFaceAndShoulderIntents(bool suppressConfirm)
     if (!suppressConfirm && GInput.gamepad.stickButtonsToDo[0])
         SDLInput_BufferControllerUiAction(ControllerUiAction::Confirm, true);
     if (GInput.gamepad.stickButtonsToDo[1])
+    {
+        if (GWorld && GWorld->GetCameraEffect())
+        {
+            DWORD now = GlobalTickCount();
+            SDLInput_BufferKeyEvent(SDL_SCANCODE_ESCAPE, true, now);
+            SDLInput_BufferKeyEvent(SDL_SCANCODE_ESCAPE, false, now + 1);
+        }
         SDLInput_BufferControllerUiAction(ControllerUiAction::Cancel, true);
+    }
     if (GInput.gamepad.stickButtonsToDo[2])
         SDLInput_BufferControllerUiAction(ControllerUiAction::Preview, false);
     if (GInput.gamepad.stickButtonsToDo[3])
@@ -460,10 +490,10 @@ void ProcessJoystick_SDL()
     const float dzTrigger = GInput.gamepad.deadzoneTrigger;
 
     // ---- Left stick → vehicle analog axes + infantry WASD injection ----
-    float lx = sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_LEFTX) / 32767.0f, dzStick)
-                        : 0.0f;
-    float ly = sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_LEFTY) / 32767.0f, dzStick)
-                        : 0.0f;
+    float lx =
+        sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_LEFTX) / 32767.0f, dzStick) : 0.0f;
+    float ly =
+        sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_LEFTY) / 32767.0f, dzStick) : 0.0f;
     if (hasSyntheticLeftStick)
     {
         lx = syntheticLx;
@@ -478,10 +508,10 @@ void ProcessJoystick_SDL()
         GInput.gamepad.moveLastActive = Glob.uiTime;
 
     // ---- Right stick → camera look (direct cursorMoved injection) ----
-    float rx = sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_RIGHTX) / 32767.0f, dzStick)
-                        : 0.0f;
-    float ry = sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_RIGHTY) / 32767.0f, dzStick)
-                        : 0.0f;
+    float rx =
+        sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_RIGHTX) / 32767.0f, dzStick) : 0.0f;
+    float ry =
+        sGamepad ? ApplyDeadzone(SDL_GetGamepadAxis(sGamepad, SDL_GAMEPAD_AXIS_RIGHTY) / 32767.0f, dzStick) : 0.0f;
     CircleToSquare(rx, ry);
 
     GInput.gamepad.stickAxis[3] = rx;
@@ -496,7 +526,7 @@ void ProcessJoystick_SDL()
         if (GInput.gameFocusLost <= 0)
         {
             GInput.cursor.aimDeltaX += moveX;
-            GInput.cursor.aimDeltaY += GInput.mouse.reverseY ? -moveY : moveY;
+            GInput.cursor.aimDeltaY += GInput.gamepad.reverseYStick ? -moveY : moveY;
         }
         GInput.cursor.cursorX += moveX;
         GInput.cursor.cursorY += moveY;

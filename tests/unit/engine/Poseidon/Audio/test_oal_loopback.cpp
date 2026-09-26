@@ -7,6 +7,9 @@
 #include <AL/alext.h>
 #include <Poseidon/Audio/Streaming/WaveStream.hpp>
 #include <Poseidon/Audio/Streaming/WaveLoaders.hpp>
+#include <Poseidon/Audio/IAudioSystem.hpp>
+#include <PoseidonOpenAL/SoundSystemOAL.hpp>
+#include <PoseidonOpenAL/WaveOAL.hpp>
 #include "test_fixtures.hpp"
 #include <cmath>
 #include <vector>
@@ -23,8 +26,8 @@ namespace
 bool AudioDiagnosticsEnabled()
 {
     const char* value = std::getenv("POSEIDON_TEST_LOG");
-    return value && value[0] && std::strcmp(value, "0") != 0 && std::strcmp(value, "false") != 0
-        && std::strcmp(value, "off") != 0;
+    return value && value[0] && std::strcmp(value, "0") != 0 && std::strcmp(value, "false") != 0 &&
+           std::strcmp(value, "off") != 0;
 }
 } // namespace
 
@@ -156,6 +159,115 @@ TEST_CASE("OpenAL loopback: device init", "[Audio][integration]")
     std::vector<int16_t> buf;
     dev.Render(buf, 1024);
     CHECK(IsSilence(buf));
+}
+
+TEST_CASE("OpenAL streamed speech primes audio on first commit", "[Audio][integration][streaming][speech]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SUCCEED("default OpenAL output device unavailable");
+        return;
+    }
+
+    const std::string ogg = GET_FIXTURE("mission_smoke/alpha_scenario.cain/sound/line01.ogg");
+    auto* wave = static_cast<WaveOAL*>(sys->CreateWave(ogg.c_str(), false, true));
+    if (!wave)
+    {
+        delete sys;
+        SKIP("cannot create wave from fixture OGG");
+    }
+    if (!wave->IsStreamed())
+    {
+        wave->Release();
+        delete sys;
+        SKIP("fixture OGG not routed through the streaming path");
+    }
+
+    wave->SetKind(WaveSpeech);
+    wave->Repeat(1);
+    wave->Play();
+    sys->Commit();
+
+    INFO("state=" << static_cast<int>(wave->State()) << " buffersInFlight=" << wave->StreamingState().buffersInFlight);
+    CHECK(wave->StreamingState().buffersInFlight > 0);
+    CHECK(wave->State() == WaveState::Playing);
+
+    wave->Release();
+    delete sys;
+}
+
+TEST_CASE("OpenAL focus mute keeps background playback active", "[Audio][focus][integration]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SKIP("default OpenAL output device unavailable");
+    }
+
+    const std::string wav = GET_FIXTURE("audio/tone.wav");
+    auto* wave = static_cast<WaveOAL*>(sys->CreateWave(wav.c_str(), false, true));
+    if (!wave)
+    {
+        delete sys;
+        SKIP("cannot create wave from fixture WAV");
+    }
+
+    wave->Play();
+    sys->Commit();
+    REQUIRE(wave->State() == WaveState::Playing);
+
+    sys->SetWaveVolume(5.f);
+    sys->SetSpeechVolume(5.f);
+    sys->SetCDVolume(5.f);
+    float focusedGain = sys->ListenerGainForTest();
+    REQUIRE(focusedGain > 0.f);
+
+    sys->Activate(false);
+    float backgroundGain = sys->ListenerGainForTest();
+    CHECK(backgroundGain == Approx(0.f));
+    CHECK(wave->State() == WaveState::Playing);
+
+    auto* backgroundWave = static_cast<WaveOAL*>(sys->CreateWave(wav.c_str(), false, true));
+    REQUIRE(backgroundWave);
+    backgroundWave->Play();
+    REQUIRE(backgroundWave->State() == WaveState::WaitingDeferred);
+    sys->Commit();
+    CHECK(backgroundWave->State() == WaveState::Playing);
+
+    sys->Activate(true);
+    float restoredGain = sys->ListenerGainForTest();
+    CHECK(restoredGain == Approx(focusedGain));
+
+    backgroundWave->Release();
+    wave->Release();
+    delete sys;
+}
+
+TEST_CASE("OpenAL background suspension follows simulation state", "[Audio][focus][integration]")
+{
+    auto* sys = dynamic_cast<SoundSystemOAL*>(CreateSoundSystemOAL());
+    if (!sys)
+    {
+        SKIP("default OpenAL output device unavailable");
+    }
+
+    CHECK_FALSE(sys->ContextSuspendedForTest());
+
+    sys->Activate(false);
+    CHECK_FALSE(sys->ContextSuspendedForTest());
+
+    sys->SetSimulationRunning(false);
+    CHECK(sys->ContextSuspendedForTest());
+
+    sys->SetSimulationRunning(true);
+    CHECK_FALSE(sys->ContextSuspendedForTest());
+
+    sys->Activate(true);
+    sys->SetSimulationRunning(false);
+    CHECK_FALSE(sys->ContextSuspendedForTest());
+
+    delete sys;
 }
 
 TEST_CASE("OpenAL loopback: play WAV fixture produces signal", "[Audio][integration]")
@@ -623,8 +735,8 @@ TEST_CASE("Streaming ring absorbs a typical frame hitch without underrun", "[Aud
                 gap = 0;
         }
         if (diagnostics)
-            std::printf("  hitch=%4dms  underran=%d  maxSilenceGap=%5d samples (%.0f ms)\n", hitchMs,
-                        underran ? 1 : 0, maxGap, 1000.0 * maxGap / dev.sampleRate);
+            std::printf("  hitch=%4dms  underran=%d  maxSilenceGap=%5d samples (%.0f ms)\n", hitchMs, underran ? 1 : 0,
+                        maxGap, 1000.0 * maxGap / dev.sampleRate);
         alSourceStop(src);
         alSourcei(src, AL_BUFFER, 0);
         alDeleteSources(1, &src);

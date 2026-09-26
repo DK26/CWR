@@ -1,6 +1,7 @@
 #include <Poseidon/World/Entities/Infantry/SoldierOldCommon.hpp>
 #include <Poseidon/Core/Application.hpp>
 #include <Poseidon/Input/InputSubsystem.hpp>
+#include <Poseidon/Network/NetworkCustomAssets.hpp>
 #include <limits.h>
 #include <stdio.h>
 #include <cmath>
@@ -477,8 +478,7 @@ void Man::Simulate(float deltaT, SimulationImportance prec)
                 {
                     // calculate landcontact point position
 
-                    int level = GetShape()->FindLandContactLevel();
-                    DoAssert(level >= 0);
+                    PoseidonAssert(GetShape()->FindLandContactLevel() >= 0);
 
                     _waterDepth = 0;
                     GroundCollisionBuffer retVal;
@@ -911,12 +911,23 @@ void Man::Simulate(float deltaT, SimulationImportance prec)
 
 void Man::SetFace(RString name, RString player)
 {
+    const int playerId = IsNetworkPlayer() && GetRemotePlayer() > 1 ? GetRemotePlayer() : 0;
+    SetFace(name, PlayerIdentityKey{player, playerId});
+}
+
+void Man::SetFace(RString name, const PlayerIdentityKey& player)
+{
     if (name.GetLength() <= 0)
     {
         Fail("Face");
         name = "Default";
     }
-    _head.SetFace(Type()->_head, IsWoman(), _shape, name, player);
+    RString playerKey = player.name;
+    if (stricmp(name, "custom") == 0 && player.playerId > 1)
+    {
+        playerKey = Poseidon::BuildNetworkPlayerStorageKey(player.playerId);
+    }
+    _head.SetFace(Type()->_head, IsWoman(), _shape, name, playerKey);
 }
 
 void Man::SetGlasses(RString name)

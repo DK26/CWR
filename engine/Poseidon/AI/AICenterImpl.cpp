@@ -21,16 +21,23 @@
 #include <Poseidon/Foundation/Algorithms/Qsort.hpp>
 
 #include <Poseidon/AI/ArcadeTemplate.hpp>
+#include <Poseidon/IO/Filesystem/Utf8Paths.hpp>
 #include <Poseidon/IO/Serialization/ParamArchive.hpp>
 
 #include <Poseidon/Game/Commands/GameStateExt.hpp>
 
 #include <Poseidon/Network/Network.hpp>
+#include <Poseidon/Network/NetworkCustomAssets.hpp>
 #include <Poseidon/Game/Chat.hpp>
 
 #include <Poseidon/Foundation/Enums/EnumNames.hpp>
 
 #include <Poseidon/Game/UiActions.hpp>
+
+namespace Poseidon
+{
+RString GetUserDirectory();
+}
 
 #include <Poseidon/Foundation/Strings/Mbcs.hpp>
 #include <Poseidon/Foundation/Strings/Bstring.hpp>
@@ -571,10 +578,7 @@ void AICenter::Init(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAllocSA>& in
 
     BeginArcade(t, inits);
 
-    if (!AssertValid())
-    {
-        Fail("Structure invalid after init");
-    }
+    PoseidonAssert(AssertValid());
 }
 
 void AICenter::InitSensors(bool initialize)
@@ -1863,9 +1867,11 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                                     info._squadTitle = identity->squad->title;
                                     if (identity->squad->picture.GetLength() > 0)
                                     {
-                                        RString picture = RString("tmp\\squads\\") + identity->squad->nick +
-                                                          RString("\\") + identity->squad->picture;
-                                        if (QIFStream::FileExists(picture))
+                                        RString picture = Poseidon::FindNetworkSquadPicturePath(
+                                            Poseidon::GetUserDirectory(), identity->squad->nick,
+                                            identity->squad->picture,
+                                            [](const RString& path) { return Poseidon::FileExistsUtf8(path); });
+                                        if (picture.GetLength() > 0)
                                         {
                                             info._squadPicture = GlobLoadTexture(picture);
                                         }
@@ -1987,9 +1993,11 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                                     info._squadTitle = identity->squad->title;
                                     if (identity->squad->picture.GetLength() > 0)
                                     {
-                                        RString picture = RString("tmp\\squads\\") + identity->squad->nick +
-                                                          RString("\\") + identity->squad->picture;
-                                        if (QIFStream::FileExists(picture))
+                                        RString picture = Poseidon::FindNetworkSquadPicturePath(
+                                            Poseidon::GetUserDirectory(), identity->squad->nick,
+                                            identity->squad->picture,
+                                            [](const RString& path) { return Poseidon::FileExistsUtf8(path); });
+                                        if (picture.GetLength() > 0)
                                         {
                                             info._squadPicture = GlobLoadTexture(picture);
                                         }

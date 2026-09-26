@@ -421,6 +421,11 @@ void WaveOAL::OpenStreaming()
 
 bool WaveOAL::PumpDrainUpload()
 {
+    return PumpDrainUpload(true);
+}
+
+bool WaveOAL::PumpDrainUpload(bool kickDecode)
+{
     // pump-thread jobs (1)(2). CALLER HOLDS _sys->_audioMutex (the
     // StreamPumpLoop). Touches only _streaming bookkeeping + the AL buffer queue
     // (never play-state). Returns true (and latches decodeInFlight) when the
@@ -487,6 +492,10 @@ bool WaveOAL::PumpDrainUpload()
     // (3) decision: decode another chunk if there's room and content left. Latch
     // decodeInFlight here (under the lock) so the dtor's wait sees it before we
     // release the lock and the caller decodes.
+    if (!kickDecode)
+    {
+        return false;
+    }
     const bool needMore = !_streaming.eofReached.load(std::memory_order_acquire) &&
                           static_cast<int>(_streaming.queue.Size()) + _streaming.buffersInFlight <
                               ::Poseidon::Audio::StreamingBuffers::kNumBuffers;
@@ -746,9 +755,28 @@ void WaveOAL::Unload()
     if (!_loaded)
         return;
 
+    if (_isStreamed)
+    {
+        _streaming.aborted.store(true, std::memory_order_release);
+        while (_streaming.decodeInFlight.load(std::memory_order_acquire))
+            std::this_thread::yield();
+    }
+
+    std::lock_guard<std::recursive_mutex> lk(_sys->_audioMutex);
+
     if (_alSource)
     {
         alSourceStop(_alSource);
+        if (_isStreamed)
+        {
+            ALint queued = 0;
+            alGetSourcei(_alSource, AL_BUFFERS_QUEUED, &queued);
+            while (queued-- > 0)
+            {
+                ALuint buffer = 0;
+                alSourceUnqueueBuffers(_alSource, 1, &buffer);
+            }
+        }
         alDeleteSources(1, &_alSource);
         _alSource = 0;
     }
@@ -756,6 +784,17 @@ void WaveOAL::Unload()
     {
         alDeleteBuffers(1, &_alBuffer);
         _alBuffer = 0;
+    }
+    if (_isStreamed && _streaming.alBuffers[0] != 0)
+    {
+        alDeleteBuffers(::Poseidon::Audio::StreamingBuffers::kNumBuffers, _streaming.alBuffers);
+        std::fill(std::begin(_streaming.alBuffers), std::end(_streaming.alBuffers), 0);
+        _streaming.freeBuffers.clear();
+        _streaming.queue.Clear();
+        _streaming.buffersInFlight = 0;
+        _streaming.decodeOffsetBytes.store(0, std::memory_order_release);
+        _streaming.consumedBytes.store(0, std::memory_order_release);
+        _streaming.eofReached.store(false, std::memory_order_release);
     }
     _loaded = false;
     _loadState.store(static_cast<int>(LoadState::NotStarted), std::memory_order_release);
@@ -905,7 +944,7 @@ void WaveOAL::Queue(IWave* predecessorBase, int /*repeat*/)
 // Actual playback — called from SoundSystemOAL::Commit()
 void WaveOAL::DoPlay()
 {
-    std::lock_guard<std::recursive_mutex> lk(_sys->_audioMutex);
+    std::unique_lock<std::recursive_mutex> lk(_sys->_audioMutex);
     if (_state.terminated)
         return;
     if (_playing)
@@ -960,6 +999,16 @@ void WaveOAL::DoPlay()
             }
             _loaded = true; // streamed waves "load" by opening AL state
             _loadState.store(static_cast<int>(LoadState::Resident), std::memory_order_release);
+            if (_kind == WaveSpeech && _streaming.buffersInFlight == 0 && _streaming.queue.Size() == 0 &&
+                !_streaming.decodeInFlight.load(std::memory_order_acquire))
+            {
+                _streaming.decodeInFlight.store(true, std::memory_order_release);
+                lk.unlock();
+                DecodeOneChunk();
+                lk.lock();
+                _streaming.decodeInFlight.store(false, std::memory_order_release);
+                PumpDrainUpload(false);
+            }
             UpdateStreamingPlayback(); // kick first chunk immediately
             // Source needs to be playing for AL to consume queued
             // buffers; start it now (will silently play silence
@@ -1313,11 +1362,6 @@ void WaveOAL::LastLoop()
     _state.looping = false;
     if (_alSource && !_isStreamed)
         alSourcei(_alSource, AL_LOOPING, AL_FALSE);
-    if (_playing && _alSource)
-    {
-        DoStop();
-        DoPlay();
-    }
 }
 
 void WaveOAL::PlayUntilStopValue(float time)

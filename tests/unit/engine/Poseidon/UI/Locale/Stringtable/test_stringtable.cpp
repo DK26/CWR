@@ -15,6 +15,9 @@
 #else
 #include <unistd.h>
 #include <limits.h>
+#if __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 using Poseidon::GetLanguage;
 using Poseidon::LocalizeString;
@@ -41,7 +44,12 @@ static RString GetExecutableDirectory()
         GetModuleFileNameA(nullptr, exePath, MAX_PATH);
         char* lastSlash = strrchr(exePath, '\\');
 #else
+#if __APPLE__
+        uint32_t len = sizeof(exePath) - 1;
+        _NSGetExecutablePath(exePath, &len);
+#else
         ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+#endif
         if (len > 0)
             exePath[len] = '\0';
         else
@@ -165,6 +173,16 @@ TEST_CASE("Stringtable - Load global stringtable", "[stringtable][load][global]"
         RString goodbye = Poseidon::LocalizeString("STR_GOODBYE");
         REQUIRE(std::string(goodbye.Data()) == "Auf Wiedersehen");
     }
+}
+
+TEST_CASE("Stringtable - LocalizeStringWithFallback", "[stringtable][localize]")
+{
+    Poseidon::ClearStringtable();
+    GLanguage = "English";
+    Poseidon::LoadStringtable("global", GetTestFixturePath("stringtable_test.csv"), 0, true);
+
+    REQUIRE(std::string(Poseidon::LocalizeStringWithFallback("STR_HELLO", "fb")) == "Hello");
+    REQUIRE(std::string(Poseidon::LocalizeStringWithFallback("STR_DOES_NOT_EXIST", "fb")) == "fb");
 }
 
 TEST_CASE("Stringtable - Localize by name", "[stringtable][localize]")

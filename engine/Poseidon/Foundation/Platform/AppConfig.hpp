@@ -2,6 +2,7 @@
 
 #include <Poseidon/Foundation/Strings/RString.hpp>
 #include <string>
+#include <vector>
 
 // Forward declaration for CLI11
 namespace CLI {
@@ -26,6 +27,11 @@ public:
     bool HasParseFatalError() const { return _parseFatalExitCode != 0; }
     int GetParseFatalExitCode() const { return _parseFatalExitCode; }
     const std::string& GetParseFatalError() const { return _parseFatalError; }
+
+    static std::string DescribeLaunchError(const std::string& cliError, int argc, const char* const* argv);
+    // Args tolerated by allow_extras() but matched to no option; reported so a typo'd
+    // launch flag isn't silently dropped.
+    const std::vector<std::string>& GetUnrecognizedArgs() const { return _unrecognizedArgs; }
 
     /// Apply parsed config values to process-wide globals.
     void ApplyToLegacyGlobals();
@@ -108,6 +114,9 @@ public:
 
     /// True when master-server publishing/listing is disabled for a LAN/private server.
     bool IsPrivateServer() const { return _privateServer; }
+
+    /// True when this dedicated server should publish itself to the master server.
+    bool IsPublicServer() const { return _publicServer; }
     
     /// Server password
     const RString& GetPassword() const { return _password; }
@@ -126,6 +135,9 @@ public:
     
     /// Auto-assign client to side:slot (--mp-assign WEST:1), empty=disabled
     const std::string& GetMPAssign() const { return _mpAssign; }
+
+    /// Print the exact MP compatibility tuple and exit before opening a window.
+    bool PrintMPVersion() const { return _printMPVersion; }
     
     // Audio
 
@@ -286,6 +298,9 @@ public:
 	/// Log file path (--log-file), empty = no file logging
 	const std::string& GetLogFile() const { return _logFile; }
 
+	/// True when --no-log-file disables the automatic per-run log file.
+	bool NoLogFile() const { return _noLogFile; }
+
 	/// Chrome trace JSON output path (--perf-trace), empty = disabled.
 	/// File loads in https://ui.perfetto.dev/ or chrome://tracing.
 	const std::string& GetPerfTracePath() const { return _perfTracePath; }
@@ -363,10 +378,12 @@ private:
     RString _connectIP;
     int _networkPort = 1985;
     int _connectPort = 0;
+    RString _bindAddress = "0.0.0.0";
     RString _advertiseAddress;
     int _maxMemMB = 0;
     int _maxThreads = -1;
     bool _privateServer = false;
+    bool _publicServer = false;
     RString _masterServer;
     RString _password;
     RString _playerName;
@@ -374,6 +391,7 @@ private:
     int _mpAutoStart = 0;
     bool _forceJIP = false;
     std::string _mpAssign;
+    bool _printMPVersion = false;
     
     // Audio
     bool _noSound = false;
@@ -433,6 +451,7 @@ private:
 	std::string _appTag = "";        // App identifier tag for log lines (--app-tag)
 	bool _legacyLogs = false;         // Show legacy bridge logs (--legacy-logs)
 	std::string _logFile = "";        // Log file path (--log-file), empty = no file
+	bool _noLogFile = false;          // Disable the automatic per-run log file (--no-log-file)
 	std::string _perfTracePath = "";  // Chrome trace JSON path (--perf-trace), empty = disabled
     // Mission file
     std::string _missionFile;
@@ -459,6 +478,7 @@ private:
     bool _parsed = false;
     int _parseFatalExitCode = 0;
     std::string _parseFatalError;
+    std::vector<std::string> _unrecognizedArgs;
 };
 
 } // namespace Poseidon::Foundation

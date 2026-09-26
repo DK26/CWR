@@ -10,15 +10,16 @@
     "stb",
     "mimalloc",
     "zstd",
-    "sdl3",
+    { "name": "sdl3", "version>=": "3.4.10#1" },
     "openal-soft",
     "opus",
     "libogg",
     "libvorbis",
     "enkits",
+    "sse2neon",
     {
       "name": "imgui",
-      "features": ["sdl3-binding", "sdl3-renderer-binding", "opengl3-binding", "freetype"]
+      "features": ["sdl3-binding", "sdl3-renderer-binding", "opengl3-binding", "freetype", "test-engine"]
     },
     {
       "name": "spdlog",
@@ -30,8 +31,13 @@
       "platform": "!windows"
     }
   ],
-  "builtin-baseline": "15cd15b0da3c48a0c7720e4c87e0b6030334feed",
+  "builtin-baseline": "170bd3bfb152a1795b67b5c2190ab7d899fc9971",
   "overrides": [
+    {
+      "name": "imgui",
+      "version": "1.92.8",
+      "port-version": 1
+    },
     {
       "name": "catch2",
       "version": "3.5.2"

@@ -9,16 +9,14 @@
 // reused by the dispatch table, and unit-tested directly.
 //
 // Most of these are BEHAVIOR-PRESERVING extractions of the inline NCMT* gates.
-// AdminLoginPasswordAccepted is the exception: it is hardened against N-SEC-01
-// A missing or empty `passwordAdmin` now
-// grants no remote admin instead of accepting any password.
+// AdminLoginPasswordAccepted is the exception: a missing or empty `passwordAdmin`
+// now grants no remote admin instead of accepting any password.
 
 namespace Poseidon
 {
 // True when the dedicated server accepts an admin login for `providedPassword`.
 // Requires a configured, non-empty `passwordAdmin` and an exact match: a missing
-// or empty entry grants no remote admin. Closes N-SEC-01: an unset `passwordAdmin` must
-// not grant remote admin.
+// or empty entry grants no remote admin.
 inline bool AdminLoginPasswordAccepted(const ParamFile& serverCfg, const char* providedPassword)
 {
     const ParamEntry* entry = serverCfg.FindEntry("passwordAdmin");
@@ -45,7 +43,7 @@ inline bool AdminLoginAllowed(bool dedicated, int gameMaster, bool votedAdmin, i
 // --- Command authorization predicates (the MsgAuth classes from the redesign) ---
 // Extracted verbatim from the NCMT* command gates in NetworkServerMsgOnMessage.cpp.
 // These name the authorization decisions today scattered across the switch; the
-// dispatch table (network-dispatch-redesign.md) will consult exactly these.
+// dispatch table will consult exactly these.
 
 // GameMaster-class commands (mission/restart/reassign/init/monitor/logout): dedicated
 // server, sender is the current game master. Behavior-preserving (does NOT add any check).
@@ -62,8 +60,8 @@ inline bool CommandFromPasswordAdmin(bool dedicated, int from, int gameMaster, b
 
 // Server-side remoteExec (NMTRemoteExec target == 0) authorization. The server runs the
 // supplied script only for the logged-in game master; an unprivileged client must never
-// trigger server-side execution (closes N-SEC-02). `noGameMaster` is AI_PLAYER at the call
-// site (no admin logged in). The relay-to-clients targets (2 / -2 / specific) are unaffected.
+// trigger server-side execution. `noGameMaster` is AI_PLAYER at the call site (no admin
+// logged in). The relay-to-clients targets (2 / -2 / specific) are unaffected.
 inline bool RemoteExecServerAuthorized(int from, int gameMaster, int noGameMaster)
 {
     return gameMaster != noGameMaster && from == gameMaster;
@@ -89,8 +87,7 @@ inline bool RemoteExecNameAllowed(const AutoArray<RString>& allowedNames, RStrin
 }
 
 inline bool RemoteExecClientAuthorized(int from, int gameMaster, int botClient, int noGameMaster,
-                                       RemoteExecPolicyMode mode, const AutoArray<RString>& allowedNames,
-                                       RString name)
+                                       RemoteExecPolicyMode mode, const AutoArray<RString>& allowedNames, RString name)
 {
     if (from == botClient)
     {
@@ -133,10 +130,10 @@ inline bool CommandFromAdminOrBot(int from, int gameMaster, int botClient)
 
 // NMTSelectPlayer: who may bind player `player` to a person and transfer object
 // ownership on its behalf. A client may only act for its own slot; an admin or the
-// bot client may assign any player (server-driven setup / JIP). Without this the
-// ChangeOwner ran for any sender, letting a client seize objects for another slot
-// (N-SEC-11). Note: this gates acting *for another player*, not which person a
-// player binds to itself — that is governed by the role/spawn system.
+// bot client may assign any player (server-driven setup / JIP). This gates the
+// ownership transfer to the acting slot. Note: this gates acting *for another
+// player*, not which person a player binds to itself — that is governed by the
+// role/spawn system.
 inline bool SelectPlayerAuthorized(int from, int player, int gameMaster, int botClient)
 {
     return from == player || CommandFromAdminOrBot(from, gameMaster, botClient);
@@ -178,6 +175,63 @@ inline bool RoleSwapAllowed(int currentRolePlayer, int newPlayer, int from, int 
            currentRolePlayer == noPlayer && newPlayer == aiPlayer;
 }
 
+inline bool RoleSelfRefreshAllowed(int currentRolePlayer, int newPlayer, int from)
+{
+    return currentRolePlayer == from && newPlayer == from;
+}
+
+inline bool RoleDuplicateClearRequired(int foundIndex, int targetIndex)
+{
+    return foundIndex >= 0 && foundIndex != targetIndex;
+}
+
+inline bool DelayedRoleShouldStartMissionCatchUp(bool acceptedDelayedRole, int serverState, int playerState,
+                                                 bool hasRole, int transferMissionState, int briefingState)
+{
+    return acceptedDelayedRole && serverState >= transferMissionState && serverState <= briefingState &&
+           playerState < briefingState && hasRole;
+}
+
+inline bool ShouldIgnoreStaleMissionReadyState(int requestedState, int playerState, int serverState, int prepareOkState,
+                                               int transferMissionState, int briefingState)
+{
+    return serverState >= transferMissionState && serverState <= briefingState && playerState >= transferMissionState &&
+           requestedState <= prepareOkState;
+}
+
+inline bool ShouldBroadcastNetworkMissionState(int targetState, bool joiningInProgress, int playerState,
+                                               bool missionParticipant, int transferMissionState, int loadIslandState,
+                                               int briefingState, int playState)
+{
+    if (!missionParticipant && targetState >= transferMissionState)
+    {
+        return false;
+    }
+    if (!joiningInProgress)
+    {
+        return true;
+    }
+    if (targetState == briefingState)
+    {
+        return playerState >= loadIslandState;
+    }
+    if (targetState == playState)
+    {
+        return playerState >= briefingState;
+    }
+    return true;
+}
+
+inline bool ClientShouldAcceptTransferState(int clientState, int loadIslandState)
+{
+    return clientState < loadIslandState;
+}
+
+inline bool ClientShouldPrepareLoadIsland(int clientState, int loadIslandState)
+{
+    return clientState < loadIslandState;
+}
+
 // Whether a freshly-placed role should be marked locked (a real player took a real, non-own slot).
 // Extracted verbatim from OnMessagePlayerRole.
 inline bool ShouldLockRole(int player, int from, int aiPlayer, int noPlayer)
@@ -188,9 +242,9 @@ inline bool ShouldLockRole(int player, int from, int aiPlayer, int noPlayer)
 // --- Upload path confinement ---
 
 // True if a path contains a parent-directory escape ("..") sequence. A prefix match
-// alone does not confine an upload: "<sandbox>/../../addons/x.pbo" satisfies the player
-// sandbox prefix yet climbs out of it (closes N-SEC-03). Conservative — any ".." rejects,
-// which is acceptable for a server upload sandbox.
+// alone does not confine an upload, since a path can satisfy the sandbox prefix yet
+// still contain "..". Conservative — any ".." rejects, which is acceptable for a
+// server upload sandbox.
 inline bool PathHasParentEscape(const char* path)
 {
     return path != nullptr && std::strstr(path, "..") != nullptr;
